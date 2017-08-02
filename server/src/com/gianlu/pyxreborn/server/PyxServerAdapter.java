@@ -42,9 +42,11 @@ public abstract class PyxServerAdapter extends WebSocketServer {
     }
 
     @Override
-    public void onClose(WebSocket conn, int code, String reason, boolean remote) { // TODO
+    public void onClose(WebSocket conn, int code, String reason, boolean remote) {
         if (remote) LOGGER.info("Client closed connection: " + reason);
         else LOGGER.info("Client disconnect from server: " + reason);
+
+        users.removeUser(conn.getRemoteSocketAddress());
     }
 
     @Nullable

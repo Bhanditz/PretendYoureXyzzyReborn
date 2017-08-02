@@ -57,4 +57,24 @@ public class ConnectedUsers extends ArrayList<User> {
 
         return null;
     }
+
+    @Nullable
+    public User findByAddress(InetSocketAddress address) {
+        for (User user : this)
+            if (Objects.equals(user.address, address))
+                return user;
+
+        return null;
+    }
+
+    public void removeUser(InetSocketAddress address) {
+        User user = findByAddress(address);
+        if (user != null) {
+            remove(user);
+
+            JsonObject obj = new JsonObject();
+            obj.addProperty(Fields.EVENT.toString(), Events.USER_LEFT.toString());
+            server.broadcastMessage(obj);
+        }
+    }
 }

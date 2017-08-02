@@ -1,5 +1,6 @@
 package com.gianlu.pyxreborn.server;
 
+import com.gianlu.pyxreborn.Events;
 import com.gianlu.pyxreborn.Exceptions.ErrorCodes;
 import com.gianlu.pyxreborn.Exceptions.GeneralException;
 import com.gianlu.pyxreborn.Fields;
@@ -67,7 +68,7 @@ public class ConnectedUsers extends ArrayList<User> {
         return null;
     }
 
-    public void removeUser(InetSocketAddress address) {
+    public void removeUser(InetSocketAddress address) { // TODO: Should save state for like 60 sec to allow reconnect
         User user = findByAddress(address);
         if (user != null) {
             remove(user);

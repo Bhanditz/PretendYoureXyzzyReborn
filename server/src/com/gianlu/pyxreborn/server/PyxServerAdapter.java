@@ -3,6 +3,7 @@ package com.gianlu.pyxreborn.server;
 import com.gianlu.pyxreborn.Exceptions.ErrorCodes;
 import com.gianlu.pyxreborn.Exceptions.GeneralException;
 import com.gianlu.pyxreborn.Fields;
+import com.gianlu.pyxreborn.Models.CardSet;
 import com.gianlu.pyxreborn.Models.User;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -13,6 +14,7 @@ import org.java_websocket.server.WebSocketServer;
 import org.jetbrains.annotations.Nullable;
 
 import java.net.InetSocketAddress;
+import java.util.List;
 import java.util.Objects;
 import java.util.logging.Logger;
 
@@ -21,11 +23,13 @@ public abstract class PyxServerAdapter extends WebSocketServer {
     private final static int CLOSE = 1001;
     private final Config config;
     private final ConnectedUsers users;
+    private final List<CardSet> cardSets;
 
-    public PyxServerAdapter(Config config) {
+    public PyxServerAdapter(Config config, List<CardSet> cardSets) {
         super(new InetSocketAddress(config.serverPort));
         this.config = config;
         this.users = new ConnectedUsers(this, config.maxUsers);
+        this.cardSets = cardSets;
     }
 
     @Override

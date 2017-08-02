@@ -1,4 +1,4 @@
-package com.gianlu.pyxreborn.server;
+package com.gianlu.pyxreborn;
 
 public enum Events {
     NEW_USER("nu"),

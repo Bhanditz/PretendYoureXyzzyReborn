@@ -7,9 +7,11 @@ import org.java_websocket.server.WebSocketServer;
 import java.net.InetSocketAddress;
 
 public class Server extends WebSocketServer {
+    private final Config config;
 
-    public Server() {
-        super(new InetSocketAddress(Config.get().getInt(Config.Key.SERVER_PORT)));
+    public Server(Config config) {
+        super(new InetSocketAddress(config.serverPort));
+        this.config = config;
     }
 
     @Override

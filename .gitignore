@@ -11,7 +11,6 @@
 .mtj.tmp/
 
 # Package Files #
-*.jar
 *.war
 *.ear
 *.zip
@@ -31,5 +30,6 @@ modules.xml
 .idea/dbnavigator.xml
 .idea/inspectionProfiles/
 .idea/vcs.xml
+.idea/uiDesigner.xml
 out/
 server.conf

@@ -1,18 +1,25 @@
 package com.gianlu.pyxreborn;
 
-import java.io.IOException;
+
+import com.beust.jcommander.JCommander;
+import com.beust.jcommander.ParameterException;
 
 public class Startup {
     public static void main(String[] args) {
+        Config config = new Config();
+
         try {
-            Config.instantiate();
-        } catch (IOException ex) {
-            System.err.println("The configuration file couldn't be read!");
+            JCommander.newBuilder()
+                    .addObject(config)
+                    .build()
+                    .parse(args);
+        } catch (ParameterException ex) {
+            ex.getJCommander().usage();
             System.exit(1);
             return;
         }
 
-        Server server = new Server();
+        Server server = new Server(config);
         server.start();
     }
 }

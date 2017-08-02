@@ -33,6 +33,6 @@ public class Server extends PyxServerAdapter {
             throw new GeneralException(ErrorCodes.SERVER_ERROR, ex);
         }
 
-        return handler.handleRequest(this, response);
+        return handler.handleRequest(this, request, response);
     }
 }

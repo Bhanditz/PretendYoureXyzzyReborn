@@ -11,7 +11,9 @@ public class Startup {
 
         Client client = new Client(URI.create("ws://127.0.0.1:89/"), nickname);
         if (client.connectBlocking()) {
-            client.sendMessage(client.createRequest(Operations.GET_USERS_LIST));
+            client.sendMessage(client.createRequest(Operations.GET_GAMES_LIST));
+            client.sendMessage(client.createRequest(Operations.CREATE_GAME));
+            client.sendMessage(client.createRequest(Operations.CREATE_GAME));
             client.sendMessage(client.createRequest(Operations.GET_GAMES_LIST));
         } else {
             System.out.println("FAILED CONNECTING!");

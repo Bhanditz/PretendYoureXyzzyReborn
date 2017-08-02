@@ -22,23 +22,21 @@ public class ConnectedUsers extends ArrayList<User> {
     }
 
     public User checkAndAdd(String nickname, InetSocketAddress address) throws GeneralException {
-        if (size() >= maxUsers)
-            throw new GeneralException(ErrorCodes.TOO_MANY_USERS);
-        else if (findByNickname(nickname) != null)
-            throw new GeneralException(ErrorCodes.NICK_ALREADY_IN_USE);
+        if (size() >= maxUsers) throw new GeneralException(ErrorCodes.TOO_MANY_USERS);
+        else if (findByNickname(nickname) != null) throw new GeneralException(ErrorCodes.NICK_ALREADY_IN_USE);
 
         User user = new User(nickname, null, address);
 
-        JsonObject obj1 = new JsonObject();
-        obj1.addProperty(Fields.EVENT.toString(), Events.NEW_USER.toString());
-        obj1.addProperty(Fields.NICKNAME.toString(), nickname);
-        server.broadcastMessage(obj1); // This way we don't send the broadcast to the user itself
+        JsonObject obj = new JsonObject();
+        obj.addProperty(Fields.EVENT.toString(), Events.NEW_USER.toString());
+        obj.addProperty(Fields.NICKNAME.toString(), nickname);
+        server.broadcastMessage(obj); // This way we don't send the broadcast to the user itself
 
         add(user);
 
-        JsonObject obj = new JsonObject();
-        obj.addProperty(Fields.SESSION_ID.toString(), user.sessionId);
-        server.sendMessage(user, obj);
+        JsonObject obj1 = new JsonObject();
+        obj1.addProperty(Fields.SESSION_ID.toString(), user.sessionId);
+        server.sendMessage(user, obj1);
 
         return user;
     }

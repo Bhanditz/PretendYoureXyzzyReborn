@@ -1,5 +1,6 @@
 package com.gianlu.pyxreborn.server.Handlers;
 
+import com.gianlu.pyxreborn.Exceptions.GeneralException;
 import com.gianlu.pyxreborn.Fields;
 import com.gianlu.pyxreborn.Models.User;
 import com.gianlu.pyxreborn.Operations;
@@ -13,10 +14,10 @@ public class GetUsersListHandler extends BaseHandler {
     }
 
     @Override
-    public JsonObject handleRequest(Server server, JsonObject response) {
+    public JsonObject handleRequest(Server server, JsonObject request, JsonObject response) throws GeneralException {
         JsonArray list = new JsonArray();
         for (User user : server.users)
-            list.add(user.nickname);
+            list.add(user.toJson());
 
         response.add(Fields.USERS_LIST.toString(), list);
         response.addProperty(Fields.MAX_USERS.toString(), server.users.getMax());

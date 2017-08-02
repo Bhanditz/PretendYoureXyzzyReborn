@@ -6,7 +6,9 @@ public enum ErrorCodes {
     INVALID_REQUEST("ir"),
     NOT_CONNECTED("nc"),
     UNKNOWN_OPERATION("uop"),
-    SERVER_ERROR("se");
+    SERVER_ERROR("se"),
+    TOO_MANY_GAMES("tmg"),
+    ALREADY_IN_GAME("aig");
 
     private final String val;
 

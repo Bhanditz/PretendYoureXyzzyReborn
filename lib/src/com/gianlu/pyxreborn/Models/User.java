@@ -1,13 +1,15 @@
 package com.gianlu.pyxreborn.Models;
 
+import com.gianlu.pyxreborn.Fields;
 import com.gianlu.pyxreborn.Utils;
+import com.google.gson.JsonObject;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.net.InetSocketAddress;
 import java.util.Random;
 
-public class User {
+public class User implements Jsonable {
     public final String nickname;
     public final InetSocketAddress address;
     public final String sessionId;
@@ -39,4 +41,10 @@ public class User {
         return nickname.equals(user.nickname) && sessionId.equals(user.sessionId);
     }
 
+    @Override
+    public JsonObject toJson() {
+        JsonObject obj = new JsonObject();
+        obj.addProperty(Fields.NICKNAME.toString(), nickname);
+        return obj;
+    }
 }

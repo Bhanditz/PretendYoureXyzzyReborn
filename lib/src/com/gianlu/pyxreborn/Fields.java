@@ -10,7 +10,10 @@ public enum Fields {
     USERS_LIST("ul"),
     MAX_USERS("mu"),
     GAMES_LIST("gl"),
-    MAX_GAMES("mg");
+    MAX_GAMES("mg"),
+    GID("gid"),
+    PLAYERS("p"),
+    HOST("h");
 
     private final String val;
 

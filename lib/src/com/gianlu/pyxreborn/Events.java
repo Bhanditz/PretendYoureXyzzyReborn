@@ -2,7 +2,8 @@ package com.gianlu.pyxreborn;
 
 public enum Events {
     NEW_USER("nu"),
-    USER_LEFT("ul");
+    USER_LEFT("ul"),
+    NEW_GAME("ng");
 
     private final String val;
 

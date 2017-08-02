@@ -5,7 +5,8 @@ public enum ErrorCodes {
     NICK_ALREADY_IN_USE("naiu"),
     INVALID_REQUEST("ir"),
     NOT_CONNECTED("nc"),
-    UNKNOWN_OPERATION("uop");
+    UNKNOWN_OPERATION("uop"),
+    SERVER_ERROR("se");
 
     private final String val;
 

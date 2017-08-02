@@ -29,9 +29,8 @@ public class Server extends PyxServerAdapter {
         BaseHandler handler;
         try {
             handler = Handlers.LIST.get(op).newInstance();
-        } catch (InstantiationException | IllegalAccessException e) {
-            e.printStackTrace();
-            return null;
+        } catch (InstantiationException | IllegalAccessException ex) {
+            throw new GeneralException(ErrorCodes.SERVER_ERROR, ex);
         }
 
         return handler.handleRequest(this, response);

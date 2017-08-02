@@ -85,6 +85,7 @@ public abstract class PyxServerAdapter extends WebSocketServer {
                     if (resp != null) sendMessage(user, resp);
                 } catch (GeneralException ex) {
                     sendErrorCode(conn, ex.code);
+                    if (ex.getCause() != null) ex.getCause().printStackTrace();
                 }
             }
         } else {

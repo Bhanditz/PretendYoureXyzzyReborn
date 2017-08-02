@@ -7,4 +7,9 @@ public class GeneralException extends Exception {
         super(code.toString());
         this.code = code;
     }
+
+    public GeneralException(ErrorCodes code, Throwable cause) {
+        super(code.toString(), cause);
+        this.code = code;
+    }
 }

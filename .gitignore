@@ -30,6 +30,7 @@ modules.xml
 .idea/dbnavigator.xml
 .idea/inspectionProfiles/
 .idea/vcs.xml
+.idea/dictionaries/*
 .idea/uiDesigner.xml
 out/
 server.conf

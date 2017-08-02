@@ -4,7 +4,8 @@ public enum ErrorCodes {
     TOO_MANY_USERS("tmu"),
     NICK_ALREADY_IN_USE("naiu"),
     INVALID_REQUEST("ir"),
-    NOT_CONNECTED("nc");
+    NOT_CONNECTED("nc"),
+    UNKNOWN_OPERATION("uop");
 
     private final String val;
 

@@ -13,4 +13,7 @@ public class Config {
 
     @Parameter(names = {"--cards-db"}, description = "The SQLite database where the cards are stored", required = true)
     public File cardsDatabase;
+
+    @Parameter(names = {"--max-games"}, description = "Max number of games")
+    public int maxGames = 400;
 }

@@ -5,7 +5,12 @@ public enum Fields {
     SESSION_ID("sid"),
     ERROR_CODE("ec"),
     EVENT("ev"),
-    ID("id");
+    ID("id"),
+    OPERATION("op"),
+    USERS_LIST("ul"),
+    MAX_USERS("mu"),
+    GAMES_LIST("gl"),
+    MAX_GAMES("mg");
 
     private final String val;
 

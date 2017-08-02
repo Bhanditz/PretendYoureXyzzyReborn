@@ -21,7 +21,7 @@ public class ConnectedUsers extends ArrayList<User> {
         this.maxUsers = maxUsers;
     }
 
-    public void checkAndAdd(String nickname, InetSocketAddress address) throws GeneralException {
+    public User checkAndAdd(String nickname, InetSocketAddress address) throws GeneralException {
         if (size() >= maxUsers)
             throw new GeneralException(ErrorCodes.TOO_MANY_USERS);
         else if (findByNickname(nickname) != null)
@@ -39,6 +39,8 @@ public class ConnectedUsers extends ArrayList<User> {
         JsonObject obj = new JsonObject();
         obj.addProperty(Fields.SESSION_ID.toString(), user.sessionId);
         server.sendMessage(user, obj);
+
+        return user;
     }
 
     @Nullable
@@ -77,5 +79,9 @@ public class ConnectedUsers extends ArrayList<User> {
             obj.addProperty(Fields.EVENT.toString(), Events.USER_LEFT.toString());
             server.broadcastMessage(obj);
         }
+    }
+
+    public int getMax() {
+        return maxUsers;
     }
 }

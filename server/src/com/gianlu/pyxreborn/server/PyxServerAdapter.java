@@ -9,7 +9,11 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.java_websocket.WebSocket;
+import org.java_websocket.drafts.Draft;
+import org.java_websocket.exceptions.InvalidDataException;
+import org.java_websocket.framing.CloseFrame;
 import org.java_websocket.handshake.ClientHandshake;
+import org.java_websocket.handshake.ServerHandshakeBuilder;
 import org.java_websocket.server.WebSocketServer;
 import org.jetbrains.annotations.Nullable;
 
@@ -20,29 +24,41 @@ import java.util.logging.Logger;
 
 public abstract class PyxServerAdapter extends WebSocketServer {
     private final static Logger LOGGER = Logger.getLogger(Server.class.getName());
-    private final static int CLOSE = 1001;
     private final Config config;
-    private final ConnectedUsers users;
+    public final ConnectedUsers users;
     private final List<CardSet> cardSets;
+    public final Games games;
 
     public PyxServerAdapter(Config config, List<CardSet> cardSets) {
         super(new InetSocketAddress(config.serverPort));
         this.config = config;
         this.users = new ConnectedUsers(this, config.maxUsers);
         this.cardSets = cardSets;
+        this.games = new Games(config.maxGames);
+    }
+
+    @Override
+    public ServerHandshakeBuilder onWebsocketHandshakeReceivedAsServer(WebSocket conn, Draft draft, ClientHandshake request) throws InvalidDataException {
+        ServerHandshakeBuilder builder = super.onWebsocketHandshakeReceivedAsServer(conn, draft, request);
+        if (request.hasFieldValue(Fields.NICKNAME.toString())) {
+            try {
+                User user = users.checkAndAdd(request.getFieldValue(Fields.NICKNAME.toString()), conn.getRemoteSocketAddress());
+                builder.put(Fields.SESSION_ID.toString(), user.sessionId);
+            } catch (GeneralException ex) {
+                throw new InvalidDataException(CloseFrame.POLICY_VALIDATION, ex.code.toString());
+            }
+        } else {
+            throw new InvalidDataException(CloseFrame.POLICY_VALIDATION, ErrorCodes.INVALID_REQUEST.toString());
+        }
+
+        // FIXME: Not working, but I opened an issue: https://github.com/TooTallNate/Java-WebSocket/issues/530
+
+        return builder;
     }
 
     @Override
     public void onOpen(WebSocket conn, ClientHandshake handshake) {
-        if (handshake.hasFieldValue(Fields.NICKNAME.toString())) {
-            try {
-                users.checkAndAdd(handshake.getFieldValue(Fields.NICKNAME.toString()), conn.getRemoteSocketAddress());
-            } catch (GeneralException ex) {
-                conn.close(CLOSE, ex.code.toString());
-            }
-        } else {
-            conn.close(CLOSE, ErrorCodes.INVALID_REQUEST.toString());
-        }
+        LOGGER.info("Client connected: " + conn.getRemoteSocketAddress());
     }
 
     @Override
@@ -59,7 +75,7 @@ public abstract class PyxServerAdapter extends WebSocketServer {
     @Override
     public final void onMessage(WebSocket conn, String message) {
         JsonObject req = new JsonParser().parse(message).getAsJsonObject();
-        if (req.has(Fields.SESSION_ID.toString())) {
+        if (req.has(Fields.SESSION_ID.toString()) && req.has(Fields.OPERATION.toString())) {
             User user = users.findBySessionId(req.get(Fields.SESSION_ID.toString()).getAsString());
             if (user == null) {
                 sendErrorCode(conn, ErrorCodes.NOT_CONNECTED);

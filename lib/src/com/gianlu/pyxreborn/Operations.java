@@ -7,7 +7,8 @@ import java.util.Objects;
 public enum Operations {
     GET_GAMES_LIST("ggl"),
     GET_USERS_LIST("gul"),
-    CREATE_GAME("cg");
+    CREATE_GAME("cg"),
+    JOIN_GAME("jg");
 
     private final String val;
 

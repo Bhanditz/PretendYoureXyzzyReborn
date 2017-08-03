@@ -23,7 +23,7 @@ public class ConnectedUsers extends ArrayList<User> {
 
     public User checkAndAdd(String nickname, InetSocketAddress address) throws GeneralException {
         if (size() >= maxUsers) throw new GeneralException(ErrorCodes.TOO_MANY_USERS);
-        else if (findByNickname(nickname) != null) throw new GeneralException(ErrorCodes.NICK_ALREADY_IN_USE);
+        if (findByNickname(nickname) != null) throw new GeneralException(ErrorCodes.NICK_ALREADY_IN_USE);
 
         User user = new User(nickname, null, address);
 

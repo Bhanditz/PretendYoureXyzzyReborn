@@ -13,7 +13,9 @@ public enum Fields {
     MAX_GAMES("mg"),
     GID("gid"),
     PLAYERS("p"),
-    HOST("h");
+    HOST("h"),
+    USER("u"),
+    SUCCESSFUL("succ");
 
     private final String val;
 

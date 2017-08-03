@@ -4,6 +4,7 @@ import com.gianlu.pyxreborn.Exceptions.ErrorCodes;
 import com.gianlu.pyxreborn.Exceptions.GeneralException;
 import com.gianlu.pyxreborn.Fields;
 import com.gianlu.pyxreborn.Models.CardSet;
+import com.gianlu.pyxreborn.Models.Game;
 import com.gianlu.pyxreborn.Models.User;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -24,10 +25,10 @@ import java.util.logging.Logger;
 
 public abstract class PyxServerAdapter extends WebSocketServer {
     private final static Logger LOGGER = Logger.getLogger(Server.class.getName());
-    private final Config config;
     public final ConnectedUsers users;
-    private final List<CardSet> cardSets;
     public final Games games;
+    private final Config config;
+    private final List<CardSet> cardSets;
 
     public PyxServerAdapter(Config config, List<CardSet> cardSets) {
         super(new InetSocketAddress(config.serverPort));
@@ -119,6 +120,11 @@ public abstract class PyxServerAdapter extends WebSocketServer {
 
     public void broadcastMessage(JsonElement message) {
         for (User user : users) sendMessage(user, message);
+    }
+
+    public void broadcastMessageToPlayers(Game game, JsonElement message) {
+        for (User user : game.players)
+            sendMessage(user, message);
     }
 
     public void sendMessage(WebSocket socket, JsonElement message) {

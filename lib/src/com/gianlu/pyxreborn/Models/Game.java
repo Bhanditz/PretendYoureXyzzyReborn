@@ -11,11 +11,13 @@ public class Game implements Jsonable {
     public final int gid;
     public final User host;
     public final List<User> players;
+    public Options options;
 
     public Game(int gid, User host) {
         this.gid = gid;
         this.host = host;
         this.players = new ArrayList<>();
+        this.options = Options.DEFAULT;
     }
 
     @Override
@@ -37,5 +39,14 @@ public class Game implements Jsonable {
         if (o == null || getClass() != o.getClass()) return false;
         Game game = (Game) o;
         return gid == game.gid;
+    }
+
+    public static class Options {
+        private static final Options DEFAULT = new Options(10);
+        public final int maxPlayers;
+
+        public Options(int maxPlayers) {
+            this.maxPlayers = maxPlayers;
+        }
     }
 }

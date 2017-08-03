@@ -12,5 +12,6 @@ public class Handlers {
         LIST.put(Operations.GET_GAMES_LIST, GetGamesListHandler.class);
         LIST.put(Operations.GET_USERS_LIST, GetUsersListHandler.class);
         LIST.put(Operations.CREATE_GAME, CreateGameHandler.class);
+        LIST.put(Operations.JOIN_GAME, JoinGameHandler.class);
     }
 }

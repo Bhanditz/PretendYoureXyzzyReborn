@@ -8,7 +8,9 @@ public enum ErrorCodes {
     UNKNOWN_OPERATION("uop"),
     SERVER_ERROR("se"),
     TOO_MANY_GAMES("tmg"),
-    ALREADY_IN_GAME("aig");
+    ALREADY_IN_GAME("aig"),
+    GAME_DOESNT_EXIST("gde"),
+    GAME_FULL("gf");
 
     private final String val;
 

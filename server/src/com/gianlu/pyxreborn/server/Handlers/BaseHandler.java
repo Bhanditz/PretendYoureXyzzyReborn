@@ -1,6 +1,7 @@
 package com.gianlu.pyxreborn.server.Handlers;
 
 import com.gianlu.pyxreborn.Exceptions.GeneralException;
+import com.gianlu.pyxreborn.Fields;
 import com.gianlu.pyxreborn.Operations;
 import com.gianlu.pyxreborn.server.Server;
 import com.google.gson.JsonObject;
@@ -13,4 +14,9 @@ public abstract class BaseHandler {
     }
 
     public abstract JsonObject handleRequest(Server server, JsonObject request, JsonObject response) throws GeneralException;
+
+    protected static JsonObject successful(JsonObject response) {
+        response.addProperty(Fields.SUCCESSFUL.toString(), true);
+        return response;
+    }
 }

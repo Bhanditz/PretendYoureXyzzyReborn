@@ -7,6 +7,7 @@ import com.gianlu.pyxreborn.Models.User;
 import com.gianlu.pyxreborn.Operations;
 import com.gianlu.pyxreborn.server.Server;
 import com.google.gson.JsonObject;
+import org.jetbrains.annotations.NotNull;
 
 public class CreateGameHandler extends BaseHandlerWithUser {
     public CreateGameHandler() {
@@ -14,7 +15,7 @@ public class CreateGameHandler extends BaseHandlerWithUser {
     }
 
     @Override
-    public JsonObject handleRequest(Server server, User user, JsonObject request, JsonObject response) throws GeneralException {
+    public JsonObject handleRequest(Server server, @NotNull User user, JsonObject request, JsonObject response) throws GeneralException {
         Game game = server.games.createAndAdd(user);
         response.addProperty(Fields.GID.toString(), game.gid);
         return response;

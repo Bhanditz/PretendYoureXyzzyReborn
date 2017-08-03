@@ -4,7 +4,9 @@ public enum Events {
     NEW_USER("nu"),
     USER_LEFT("ul"),
     NEW_GAME("ng"),
-    NEW_PLAYER("np");
+    GAME_NEW_PLAYER("gnp"),
+    GAME_PLAYER_LEFT("gpl"),
+    GAME_REMOVED("gr");
 
     private final String val;
 

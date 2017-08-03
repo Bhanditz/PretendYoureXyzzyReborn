@@ -5,6 +5,7 @@ import com.gianlu.pyxreborn.Exceptions.GeneralException;
 import com.gianlu.pyxreborn.Fields;
 import com.gianlu.pyxreborn.Models.CardSet;
 import com.gianlu.pyxreborn.Models.Game;
+import com.gianlu.pyxreborn.Models.Player;
 import com.gianlu.pyxreborn.Models.User;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -29,7 +30,6 @@ public abstract class PyxServerAdapter extends WebSocketServer {
     public final Games games;
     private final Config config;
     private final List<CardSet> cardSets;
-
     private final JsonParser parser;
 
     @Override
@@ -61,7 +61,7 @@ public abstract class PyxServerAdapter extends WebSocketServer {
         if (remote) LOGGER.info("Client closed connection: " + reason);
         else LOGGER.info("Client disconnect from server: " + reason);
 
-        users.removeUser(conn.getRemoteSocketAddress());
+        users.removeUser(conn.getRemoteSocketAddress(), remote);
     }
 
     @Nullable
@@ -126,8 +126,8 @@ public abstract class PyxServerAdapter extends WebSocketServer {
     }
 
     public void broadcastMessageToPlayers(Game game, JsonElement message) {
-        for (User user : game.players)
-            sendMessage(user, message);
+        for (Player player : game.players)
+            sendMessage(player.getUser(), message);
     }
 
     public void sendMessage(WebSocket socket, JsonElement message) {

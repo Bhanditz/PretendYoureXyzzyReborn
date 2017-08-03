@@ -4,6 +4,7 @@ import com.gianlu.pyxreborn.Events;
 import com.gianlu.pyxreborn.Exceptions.ErrorCodes;
 import com.gianlu.pyxreborn.Exceptions.GeneralException;
 import com.gianlu.pyxreborn.Fields;
+import com.gianlu.pyxreborn.Models.Game;
 import com.gianlu.pyxreborn.Models.User;
 import com.google.gson.JsonObject;
 import org.jetbrains.annotations.Nullable;
@@ -68,9 +69,12 @@ public class ConnectedUsers extends ArrayList<User> {
         return null;
     }
 
-    public void removeUser(InetSocketAddress address) { // TODO: Should save state for like 60 sec to allow reconnect
+    public void removeUser(InetSocketAddress address, boolean remote) { // TODO: Should save state for like 60 sec to allow reconnect if disconnection is remote
         User user = findByAddress(address);
         if (user != null) {
+            Game game = server.games.playingIn(user);
+            if (game != null) server.games.leaveGame(game, user);
+
             remove(user);
 
             JsonObject obj = new JsonObject();

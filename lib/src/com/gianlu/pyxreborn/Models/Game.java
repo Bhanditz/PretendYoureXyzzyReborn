@@ -10,13 +10,15 @@ import java.util.List;
 public class Game implements Jsonable {
     public final int gid;
     public final User host;
-    public final List<User> players;
+    public final List<Player> players;
+    public final List<User> spectators;
     public Options options;
 
     public Game(int gid, User host) {
         this.gid = gid;
         this.host = host;
         this.players = new ArrayList<>();
+        this.spectators = new ArrayList<>();
         this.options = Options.DEFAULT;
     }
 
@@ -27,7 +29,7 @@ public class Game implements Jsonable {
         obj.add(Fields.HOST.toString(), host.toJson());
 
         JsonArray players = new JsonArray();
-        for (User player : this.players) players.add(player.toJson());
+        for (Player player : this.players) players.add(player.toJson());
         obj.add(Fields.PLAYERS.toString(), players);
 
         return obj;
@@ -42,11 +44,13 @@ public class Game implements Jsonable {
     }
 
     public static class Options {
-        private static final Options DEFAULT = new Options(10);
+        private static final Options DEFAULT = new Options(10, 10);
         public final int maxPlayers;
+        public final int maxSpectators;
 
-        public Options(int maxPlayers) {
+        public Options(int maxPlayers, int maxSpectators) {
             this.maxPlayers = maxPlayers;
+            this.maxSpectators = maxSpectators;
         }
     }
 }

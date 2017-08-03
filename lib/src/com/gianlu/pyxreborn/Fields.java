@@ -15,7 +15,8 @@ public enum Fields {
     PLAYERS("p"),
     HOST("h"),
     USER("u"),
-    SUCCESSFUL("succ");
+    SUCCESSFUL("suc"),
+    KICKED("k");
 
     private final String val;
 

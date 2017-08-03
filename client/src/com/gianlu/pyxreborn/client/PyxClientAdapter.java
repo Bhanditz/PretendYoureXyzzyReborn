@@ -17,11 +17,9 @@ import java.net.URI;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Logger;
 
 // TODO: Should implement #sendMessageBlocking but I have no idea on how to do it
 public abstract class PyxClientAdapter extends WebSocketClient {
-    private static final Logger LOGGER = Logger.getGlobal();
     private final Map<Integer, IMessage> requests;
     private final JsonParser parser;
     private String sid;
@@ -38,7 +36,7 @@ public abstract class PyxClientAdapter extends WebSocketClient {
         if (sid == null)
             throw new RuntimeException(new InvalidHandshakeException("The server handshake should contain a SID!"));
 
-        LOGGER.info("Connection open! SID: " + sid);
+        Logger.info("Connection open! SID: " + sid);
     }
 
     @Override
@@ -51,7 +49,7 @@ public abstract class PyxClientAdapter extends WebSocketClient {
         if (obj.has(Fields.ERROR_CODE.toString())) listener.onException(new PyxException(obj));
         else listener.onMessage(obj);
 
-        LOGGER.info("Message received: " + message);
+        Logger.info("Message received: " + message);
     }
 
     public JsonObject createRequest(Operations op) {
@@ -72,13 +70,12 @@ public abstract class PyxClientAdapter extends WebSocketClient {
 
     @Override
     public void onClose(int code, String reason, boolean remote) {
-        LOGGER.info("Connection closed! #" + code + ": " + reason + " (remote=" + remote + ")");
+        Logger.info("Connection closed! #" + code + ": " + reason + " (remote=" + remote + ")");
     }
 
     @Override
     public void onError(Exception ex) {
-        LOGGER.severe("An error occurred!");
-        ex.printStackTrace();
+        Logger.severe(ex);
     }
 
     public interface IMessage {

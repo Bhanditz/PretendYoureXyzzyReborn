@@ -1,8 +1,11 @@
 package com.gianlu.pyxreborn.client;
 
+import com.gianlu.pyxreborn.Exceptions.PyxException;
 import com.gianlu.pyxreborn.Fields;
 import com.gianlu.pyxreborn.Operations;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.drafts.Draft;
 import org.java_websocket.drafts.Draft_6455;
@@ -11,13 +14,22 @@ import org.java_websocket.handshake.ClientHandshakeBuilder;
 import org.java_websocket.handshake.ServerHandshake;
 
 import java.net.URI;
+import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Logger;
 
+// TODO: Should implement #sendMessageBlocking but I have no idea on how to do it
 public abstract class PyxClientAdapter extends WebSocketClient {
+    private static final Logger LOGGER = Logger.getLogger(PyxClientAdapter.class.getName());
+    private final Map<Integer, IMessage> requests;
+    private final JsonParser parser;
     private String sid;
 
     public PyxClientAdapter(URI serverUri, String nickname) {
         super(serverUri, new NicknameDraft(nickname));
+        requests = new ConcurrentHashMap<>();
+        parser = new JsonParser();
     }
 
     @Override
@@ -26,7 +38,20 @@ public abstract class PyxClientAdapter extends WebSocketClient {
         if (sid == null)
             throw new RuntimeException(new InvalidHandshakeException("The server handshake should contain a SID!"));
 
-        System.out.println("OPEN! SID: " + sid);
+        LOGGER.info("Connection open! SID: " + sid);
+    }
+
+    @Override
+    public void onMessage(String message) {
+        JsonObject obj = parser.parse(message).getAsJsonObject();
+        JsonElement id = obj.get(Fields.ID.toString());
+        if (id == null) return;
+
+        IMessage listener = requests.remove(id.getAsInt());
+        if (obj.has(Fields.ERROR_CODE.toString())) listener.onException(new PyxException(obj));
+        else listener.onMessage(obj);
+
+        LOGGER.info("Message received: " + message);
     }
 
     public JsonObject createRequest(Operations op) {
@@ -37,23 +62,29 @@ public abstract class PyxClientAdapter extends WebSocketClient {
         return req;
     }
 
-    public void sendMessage(JsonObject req) {
+    public void sendMessage(JsonObject req, IMessage listener) {
+        JsonElement id = req.get(Fields.ID.toString());
+        if (id == null) throw new IllegalArgumentException("The request should contain an id!");
+
+        requests.put(id.getAsInt(), listener);
         send(req.toString());
     }
 
     @Override
-    public void onMessage(String message) {
-        System.out.println("MSG: " + message);
-    }
-
-    @Override
     public void onClose(int code, String reason, boolean remote) {
-        System.out.println("CLOSED: #" + code + ": " + reason);
+        LOGGER.info("Connection closed! #" + code + ": " + reason + " (remote=" + remote + ")");
     }
 
     @Override
     public void onError(Exception ex) {
+        LOGGER.severe("An error occurred!");
         ex.printStackTrace();
+    }
+
+    public interface IMessage {
+        void onMessage(JsonObject resp);
+
+        void onException(Exception ex);
     }
 
     private static class NicknameDraft extends Draft_6455 {

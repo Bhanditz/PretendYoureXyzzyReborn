@@ -30,13 +30,7 @@ public abstract class PyxServerAdapter extends WebSocketServer {
     private final Config config;
     private final List<CardSet> cardSets;
 
-    public PyxServerAdapter(Config config, List<CardSet> cardSets) {
-        super(new InetSocketAddress(config.serverPort));
-        this.config = config;
-        this.users = new ConnectedUsers(this, config.maxUsers);
-        this.cardSets = cardSets;
-        this.games = new Games(this, config.maxGames);
-    }
+    private final JsonParser parser;
 
     @Override
     public ServerHandshakeBuilder onWebsocketHandshakeReceivedAsServer(WebSocket conn, Draft draft, ClientHandshake request) throws InvalidDataException {
@@ -73,24 +67,33 @@ public abstract class PyxServerAdapter extends WebSocketServer {
     @Nullable
     protected abstract JsonObject onMessage(WebSocket conn, User user, JsonObject request, JsonObject response) throws GeneralException;
 
+    public PyxServerAdapter(Config config, List<CardSet> cardSets) {
+        super(new InetSocketAddress(config.serverPort));
+        this.config = config;
+        this.users = new ConnectedUsers(this, config.maxUsers);
+        this.cardSets = cardSets;
+        this.games = new Games(this, config.maxGames);
+        this.parser = new JsonParser();
+    }
+
     @Override
     public final void onMessage(WebSocket conn, String message) {
-        JsonObject req = new JsonParser().parse(message).getAsJsonObject();
+        JsonObject req = parser.parse(message).getAsJsonObject();
         if (req.has(Fields.SESSION_ID.toString()) && req.has(Fields.OPERATION.toString())) {
             User user = users.findBySessionId(req.get(Fields.SESSION_ID.toString()).getAsString());
             if (user == null) {
-                sendErrorCode(conn, ErrorCodes.NOT_CONNECTED);
+                sendErrorCode(conn, req.get(Fields.ID.toString()), ErrorCodes.NOT_CONNECTED);
             } else {
                 try {
                     JsonElement resp = onMessage(conn, user, req, createResponse(req.get(Fields.ID.toString())));
                     if (resp != null) sendMessage(user, resp);
                 } catch (GeneralException ex) {
-                    sendErrorCode(conn, ex.code);
+                    sendErrorCode(conn, req.get(Fields.ID.toString()), ex.code);
                     if (ex.getCause() != null) ex.getCause().printStackTrace();
                 }
             }
         } else {
-            sendErrorCode(conn, ErrorCodes.INVALID_REQUEST);
+            sendErrorCode(conn, req.get(Fields.ID.toString()), ErrorCodes.INVALID_REQUEST);
         }
     }
 
@@ -111,9 +114,9 @@ public abstract class PyxServerAdapter extends WebSocketServer {
         LOGGER.info("Server started on port " + getPort());
     }
 
-    private void sendErrorCode(WebSocket conn, ErrorCodes code) {
+    private void sendErrorCode(WebSocket conn, JsonElement id, ErrorCodes code) {
         LOGGER.info("Error code sent to " + conn.getRemoteSocketAddress() + ": " + code.toString());
-        JsonObject obj = new JsonObject();
+        JsonObject obj = createResponse(id);
         obj.addProperty(Fields.ERROR_CODE.toString(), code.toString());
         sendMessage(conn, obj);
     }

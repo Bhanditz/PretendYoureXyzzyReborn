@@ -21,7 +21,7 @@ import java.util.logging.Logger;
 
 // TODO: Should implement #sendMessageBlocking but I have no idea on how to do it
 public abstract class PyxClientAdapter extends WebSocketClient {
-    private static final Logger LOGGER = Logger.getLogger(PyxClientAdapter.class.getName());
+    private static final Logger LOGGER = Logger.getGlobal();
     private final Map<Integer, IMessage> requests;
     private final JsonParser parser;
     private String sid;

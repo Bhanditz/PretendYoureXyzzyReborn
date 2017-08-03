@@ -16,7 +16,8 @@ public enum Fields {
     HOST("h"),
     USER("u"),
     SUCCESSFUL("suc"),
-    KICKED("k");
+    KICKED("k"),
+    IP("ip");
 
     private final String val;
 

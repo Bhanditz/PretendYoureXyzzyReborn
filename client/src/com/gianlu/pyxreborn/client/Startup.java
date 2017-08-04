@@ -19,34 +19,42 @@ public class Startup {
     private final ConsolePrompt prompt = new ConsolePrompt();
 
     public static void main(String[] args) throws InterruptedException, IOException {
-        AnsiConsole.systemInstall();
+        String nickname;
+        String ip;
 
         Startup startup = new Startup();
+        AnsiConsole.systemInstall();
 
-        PromptBuilder promptBuilder = startup.prompt.getPromptBuilder();
-        promptBuilder.createConfirmPromp()
-                .name(LOGGING)
-                .defaultValue(ConfirmChoice.ConfirmationValue.YES)
-                .message("Do you want to enable logging?")
-                .addPrompt();
+        if (args.length > 0) {
+            nickname = args[0];
+            ip = "ws://127.0.0.1:6969";
+        } else {
+            PromptBuilder promptBuilder = startup.prompt.getPromptBuilder();
+            promptBuilder.createConfirmPromp()
+                    .name(LOGGING)
+                    .defaultValue(ConfirmChoice.ConfirmationValue.YES)
+                    .message("Do you want to enable logging?")
+                    .addPrompt();
 
-        promptBuilder.createInputPrompt()
-                .name(Fields.IP.toString())
-                .defaultValue("ws://127.0.0.1:6969")
-                .message("Insert the server IP: ")
-                .addPrompt();
+            promptBuilder.createInputPrompt()
+                    .name(Fields.IP.toString())
+                    .defaultValue("ws://127.0.0.1:6969")
+                    .message("Insert the server IP: ")
+                    .addPrompt();
 
-        promptBuilder.createInputPrompt()
-                .name(Fields.NICKNAME.toString())
-                .message("Insert a nickname: ")
-                .addPrompt();
+            promptBuilder.createInputPrompt()
+                    .name(Fields.NICKNAME.toString())
+                    .message("Insert a nickname: ")
+                    .addPrompt();
 
-        Map<String, ? extends PromtResultItemIF> result = startup.prompt.prompt(promptBuilder.build());
+            Map<String, ? extends PromtResultItemIF> result = startup.prompt.prompt(promptBuilder.build());
 
-        Logger.setEnabled(((ConfirmResult) result.get(LOGGING)).getConfirmed() == ConfirmChoice.ConfirmationValue.YES);
-        Client client = new Client(URI.create(((InputResult) result.get(Fields.IP.toString())).getInput()),
-                ((InputResult) result.get(Fields.NICKNAME.toString())).getInput());
+            Logger.setEnabled(((ConfirmResult) result.get(LOGGING)).getConfirmed() == ConfirmChoice.ConfirmationValue.YES);
+            ip = ((InputResult) result.get(Fields.IP.toString())).getInput();
+            nickname = ((InputResult) result.get(Fields.NICKNAME.toString())).getInput();
+        }
 
+        Client client = new Client(URI.create(ip), nickname);
         if (client.connectBlocking()) {
             startup.mainMenu();
         } else {

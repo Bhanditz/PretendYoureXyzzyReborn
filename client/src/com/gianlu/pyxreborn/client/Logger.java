@@ -6,7 +6,7 @@ import org.fusesource.jansi.Ansi;
 import static org.fusesource.jansi.Ansi.ansi;
 
 public class Logger {
-    private static boolean enabled;
+    private static boolean enabled = true;
 
     public static void info(String str) {
         if (!enabled) return;

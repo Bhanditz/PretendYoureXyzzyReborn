@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="Java ConsoleUI">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/libs/Java ConsoleUI.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

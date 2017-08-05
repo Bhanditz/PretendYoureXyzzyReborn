@@ -1,18 +1,27 @@
 package com.gianlu.pyxreborn.client;
 
+import com.gianlu.consoleui.Answer;
+import com.gianlu.consoleui.Choice.ChoiceAnswer;
+import com.gianlu.consoleui.Choice.ChoicePrompt;
+import com.gianlu.consoleui.Confirmation.ConfirmationAnswer;
+import com.gianlu.consoleui.Confirmation.ConfirmationPrompt;
+import com.gianlu.consoleui.Confirmation.Value;
+import com.gianlu.consoleui.ConsolePrompt;
+import com.gianlu.consoleui.Input.InputAnswer;
+import com.gianlu.consoleui.Input.InputPrompt;
+import com.gianlu.consoleui.Input.InputValidator;
+import com.gianlu.consoleui.InvalidInputException;
 import com.gianlu.pyxreborn.Fields;
 import com.gianlu.pyxreborn.Operations;
-import de.codeshelf.consoleui.elements.ConfirmChoice;
-import de.codeshelf.consoleui.prompt.*;
-import de.codeshelf.consoleui.prompt.builder.PromptBuilder;
 import org.fusesource.jansi.Ansi;
 import org.fusesource.jansi.AnsiConsole;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.Map;
+import java.net.URISyntaxException;
+import java.util.List;
 
-// FIXME: All these is pretty much broken :)
 public class Startup {
     private static final String LOGGING = "logging";
     private static final String NEXT_ACTION = "nextAction";
@@ -23,29 +32,37 @@ public class Startup {
 
         Startup startup = new Startup();
 
-        PromptBuilder promptBuilder = startup.prompt.getPromptBuilder();
-        promptBuilder.createConfirmPromp()
-                .name(LOGGING)
-                .defaultValue(ConfirmChoice.ConfirmationValue.YES)
-                .message("Do you want to enable logging?")
-                .addPrompt();
+        List<? extends Answer> result = startup.prompt.prompt(
+                new ConfirmationPrompt.Builder()
+                        .name(LOGGING)
+                        .text("Do you want to enable logging?")
+                        .defaultValue(Value.YES)
+                        .build(),
+                new InputPrompt.Builder()
+                        .name(Fields.IP.toString())
+                        .defaultValue("ws://127.0.0.1:6969")
+                        .text("What's the server IP?")
+                        .validator(new InputValidator() {
+                            @Override
+                            public void validate(@NotNull String s) throws InvalidInputException {
+                                try {
+                                    new URI(s);
+                                } catch (URISyntaxException ex) {
+                                    throw new InvalidInputException(ex.getMessage(), true);
+                                }
+                            }
+                        })
+                        .required(true)
+                        .build(),
+                new InputPrompt.Builder()
+                        .name(Fields.NICKNAME.toString())
+                        .text("Insert your nickname:")
+                        .required(true)
+                        .build());
 
-        promptBuilder.createInputPrompt()
-                .name(Fields.IP.toString())
-                .defaultValue("ws://127.0.0.1:6969")
-                .message("Insert the server IP: ")
-                .addPrompt();
-
-        promptBuilder.createInputPrompt()
-                .name(Fields.NICKNAME.toString())
-                .message("Insert a nickname: ")
-                .addPrompt();
-
-        Map<String, ? extends PromtResultItemIF> result = startup.prompt.prompt(promptBuilder.build());
-
-        Logger.setEnabled(((ConfirmResult) result.get(LOGGING)).getConfirmed() == ConfirmChoice.ConfirmationValue.YES);
-        Client client = new Client(URI.create(((InputResult) result.get(Fields.IP.toString())).getInput()),
-                ((InputResult) result.get(Fields.NICKNAME.toString())).getInput());
+        Logger.setEnabled(((ConfirmationAnswer) result.get(0)).isConfirmed());
+        Client client = new Client(URI.create(((InputAnswer) result.get(1)).getAnswer()),
+                ((InputAnswer) result.get(2)).getAnswer());
 
         if (client.connectBlocking()) {
             startup.mainMenu();
@@ -61,17 +78,15 @@ public class Startup {
     private void mainMenu() throws IOException {
         clear();
 
-        PromptBuilder promptBuilder = prompt.getPromptBuilder();
-        promptBuilder.createListPrompt()
+        ChoiceAnswer result = prompt.prompt(new ChoicePrompt.Builder()
                 .name(NEXT_ACTION)
-                .message("What you wanna do next?")
-                .newItem().text("List games").name(Operations.GET_GAMES_LIST.toString()).add()
-                .newItem().text("List users").name(Operations.GET_USERS_LIST.toString()).add()
-                .newItem().text("Create game").name(Operations.CREATE_GAME.toString()).add()
-                .addPrompt();
+                .text("What you wanna do next?")
+                .newItem().text("List games").key('g').name(Operations.GET_GAMES_LIST.toString()).add()
+                .newItem().text("List users").key('u').name(Operations.GET_USERS_LIST.toString()).add()
+                .newItem().text("Create game").key('c').name(Operations.CREATE_GAME.toString()).add()
+                .build());
 
-        Map<String, ? extends PromtResultItemIF> result = prompt.prompt(promptBuilder.build());
-        Operations next = Operations.parse(((ListResult) result.get(NEXT_ACTION)).getSelectedId());
+        Operations next = Operations.parse(result.getName());
         System.out.println("NEXT: " + next);
 
         /*

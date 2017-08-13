@@ -3,6 +3,7 @@ package com.gianlu.pyxreborn.client;
 import com.gianlu.consoleui.Answer;
 import com.gianlu.consoleui.Choice.ChoiceAnswer;
 import com.gianlu.consoleui.Choice.ChoicePrompt;
+import com.gianlu.consoleui.Choice.List.ListChoicePrompt;
 import com.gianlu.consoleui.Confirmation.ConfirmationAnswer;
 import com.gianlu.consoleui.Confirmation.ConfirmationPrompt;
 import com.gianlu.consoleui.Confirmation.Value;
@@ -76,7 +77,34 @@ public class Startup {
     }
 
     private void createGame() {
-        throw new UnsupportedOperationException("Not implemented yet!"); // TODO
+        client.sendMessage(client.createRequest(Operations.CREATE_GAME), new PyxClientAdapter.IMessage() {
+            @Override
+            public void onMessage(JsonObject resp) {
+                Logger.info("Game created: " + resp);
+                joinGame(resp.get(Fields.GID.toString()).getAsInt());
+            }
+
+            @Override
+            public void onException(Exception ex) {
+                Logger.severe(ex);
+            }
+        });
+    }
+
+    private void joinGame(int gid) {
+        JsonObject req = client.createRequest(Operations.JOIN_GAME);
+        req.addProperty(Fields.GID.toString(), gid);
+        client.sendMessage(req, new PyxClientAdapter.IMessage() {
+            @Override
+            public void onMessage(JsonObject resp) {
+                Logger.info("Game joined: " + resp);
+            }
+
+            @Override
+            public void onException(Exception ex) {
+                Logger.severe(ex);
+            }
+        });
     }
 
     private void mainMenu() {
@@ -113,17 +141,16 @@ public class Startup {
                                 if (answer.isConfirmed()) createGame();
                                 else mainMenu();
                             } catch (IOException ex) {
-                                ex.printStackTrace();
+                                throw new RuntimeException(ex);
                             }
 
                             return;
                         }
 
-                        ChoicePrompt.Builder builder = new ChoicePrompt.Builder();
+                        ListChoicePrompt.Builder builder = new ListChoicePrompt.Builder();
                         builder.name(Fields.GID.toString())
                                 .text("Select a game to join:");
 
-                        // TODO: I must use ListChoicePrompt but it's not finished, this doesn't work.
                         for (JsonElement game : games)
                             builder.newItem()
                                     .text(game.getAsJsonObject()
@@ -135,15 +162,15 @@ public class Startup {
 
                         try {
                             ChoiceAnswer answer = prompt.prompt(builder.build());
-                            System.out.println(answer);
+                            joinGame(Integer.parseInt(answer.getName()));
                         } catch (IOException ex) {
-                            ex.printStackTrace();
+                            throw new RuntimeException(ex);
                         }
                     }
 
                     @Override
                     public void onException(Exception ex) {
-                        ex.printStackTrace();
+                        Logger.severe(ex);
                     }
                 });
                 break;
@@ -167,7 +194,7 @@ public class Startup {
 
                     @Override
                     public void onException(Exception ex) {
-                        ex.printStackTrace();
+                        Logger.severe(ex);
                     }
                 });
                 break;

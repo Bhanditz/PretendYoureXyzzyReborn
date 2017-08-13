@@ -28,16 +28,30 @@ public abstract class PyxServerAdapter extends WebSocketServer {
     private final static Logger LOGGER = Logger.getLogger(Server.class.getName());
     public final ConnectedUsers users;
     public final Games games;
-    private final Config config;
+    public final Config config;
     private final List<CardSet> cardSets;
     private final JsonParser parser;
+
+    public PyxServerAdapter(Config config, List<CardSet> cardSets) {
+        super(new InetSocketAddress(config.serverPort));
+        this.config = config;
+        this.users = new ConnectedUsers(this);
+        this.cardSets = cardSets;
+        this.games = new Games(this);
+        this.parser = new JsonParser();
+    }
+
+    @Override
+    public void onOpen(WebSocket conn, ClientHandshake handshake) {
+        LOGGER.info("Client connected: " + conn.getRemoteSocketAddress());
+    }
 
     @Override
     public ServerHandshakeBuilder onWebsocketHandshakeReceivedAsServer(WebSocket conn, Draft draft, ClientHandshake request) throws InvalidDataException {
         ServerHandshakeBuilder builder = super.onWebsocketHandshakeReceivedAsServer(conn, draft, request);
         if (request.hasFieldValue(Fields.NICKNAME.toString())) {
             try {
-                User user = users.checkAndAdd(request.getFieldValue(Fields.NICKNAME.toString()), conn.getRemoteSocketAddress());
+                User user = users.checkAndAdd(request.getFieldValue(Fields.NICKNAME.toString()), request.getFieldValue(Fields.SESSION_ID.toString()), conn.getRemoteSocketAddress());
                 builder.put(Fields.SESSION_ID.toString(), user.sessionId);
             } catch (GeneralException ex) {
                 throw new InvalidDataException(CloseFrame.POLICY_VALIDATION, ex.code.toString());
@@ -51,29 +65,15 @@ public abstract class PyxServerAdapter extends WebSocketServer {
         return builder;
     }
 
-    @Override
-    public void onOpen(WebSocket conn, ClientHandshake handshake) {
-        LOGGER.info("Client connected: " + conn.getRemoteSocketAddress());
-    }
+    @Nullable
+    protected abstract JsonObject onMessage(WebSocket conn, User user, JsonObject request, JsonObject response) throws GeneralException;
 
     @Override
     public void onClose(WebSocket conn, int code, String reason, boolean remote) {
         if (remote) LOGGER.info("Client closed connection: " + reason);
         else LOGGER.info("Client disconnect from server: " + reason);
 
-        users.removeUser(conn.getRemoteSocketAddress(), remote);
-    }
-
-    @Nullable
-    protected abstract JsonObject onMessage(WebSocket conn, User user, JsonObject request, JsonObject response) throws GeneralException;
-
-    public PyxServerAdapter(Config config, List<CardSet> cardSets) {
-        super(new InetSocketAddress(config.serverPort));
-        this.config = config;
-        this.users = new ConnectedUsers(this, config.maxUsers);
-        this.cardSets = cardSets;
-        this.games = new Games(this, config.maxGames);
-        this.parser = new JsonParser();
+        users.removeUser(conn.getRemoteSocketAddress(), code == 1006);
     }
 
     @Override

@@ -16,4 +16,7 @@ public class Config {
 
     @Parameter(names = {"--max-games"}, description = "Max number of games")
     public int maxGames = 400;
+
+    @Parameter(names = {"--reconnect-delay"}, description = "Delay (in sec) within a disconnected user can recover his session")
+    public int reconnectDelay = 30;
 }

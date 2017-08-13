@@ -21,9 +21,9 @@ public class Games extends ArrayList<Game> {
     private final PyxServerAdapter server;
     private final int maxGames;
 
-    public Games(PyxServerAdapter server, int maxGames) {
+    public Games(PyxServerAdapter server) {
         this.server = server;
-        this.maxGames = maxGames;
+        this.maxGames = server.config.maxGames;
     }
 
     public int getMax() {

@@ -10,7 +10,8 @@ public enum ErrorCodes {
     TOO_MANY_GAMES("tmg"),
     ALREADY_IN_GAME("aig"),
     GAME_DOESNT_EXIST("gde"),
-    GAME_FULL("gf");
+    GAME_FULL("gf"),
+    INVALID_SID("isid");
 
     private final String val;
 

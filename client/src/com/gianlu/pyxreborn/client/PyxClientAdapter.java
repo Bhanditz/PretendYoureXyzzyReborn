@@ -12,6 +12,7 @@ import org.java_websocket.drafts.Draft_6455;
 import org.java_websocket.exceptions.InvalidHandshakeException;
 import org.java_websocket.handshake.ClientHandshakeBuilder;
 import org.java_websocket.handshake.ServerHandshake;
+import org.jetbrains.annotations.Nullable;
 
 import java.net.URI;
 import java.util.Map;
@@ -26,8 +27,13 @@ public abstract class PyxClientAdapter extends WebSocketClient {
     private PyxException blockingEx;
     private JsonObject blockingResp;
 
-    public PyxClientAdapter(URI serverUri, String nickname) {
-        super(serverUri, new NicknameDraft(nickname));
+    /**
+     * @param serverUri the server uri
+     * @param nickname  the user's nickname
+     * @param sid       if the user has disconnected recently, it can reconnect specifying the assigned SID and the same nickname
+     */
+    public PyxClientAdapter(URI serverUri, String nickname, @Nullable String sid) {
+        super(serverUri, new CustomDraft(nickname, sid));
         requests = new ConcurrentHashMap<>();
         parser = new JsonParser();
     }
@@ -128,21 +134,24 @@ public abstract class PyxClientAdapter extends WebSocketClient {
     private interface IMessageBlocking extends IMessage {
     }
 
-    private static class NicknameDraft extends Draft_6455 {
+    private static class CustomDraft extends Draft_6455 {
         private final String nickname;
+        private final String sid;
 
-        public NicknameDraft(String nickname) {
+        public CustomDraft(String nickname, @Nullable String sid) {
             this.nickname = nickname;
+            this.sid = sid;
         }
 
         @Override
         public Draft copyInstance() {
-            return new NicknameDraft(nickname);
+            return new CustomDraft(nickname, sid);
         }
 
         @Override
         public ClientHandshakeBuilder postProcessHandshakeRequestAsClient(ClientHandshakeBuilder request) {
             request.put(Fields.NICKNAME.toString(), nickname);
+            if (sid != null) request.put(Fields.SESSION_ID.toString(), sid);
             return super.postProcessHandshakeRequestAsClient(request);
         }
     }

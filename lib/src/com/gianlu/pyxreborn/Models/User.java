@@ -13,12 +13,17 @@ public class User implements Jsonable {
     public final String nickname;
     public final InetSocketAddress address;
     public final String sessionId;
+    public long disconnectedAt = -1;
 
     public User(String nickname, @Nullable String sessionId, InetSocketAddress address) {
         this.nickname = nickname;
         this.address = address;
         if (sessionId == null) this.sessionId = generateNewSessionId();
         else this.sessionId = sessionId;
+    }
+
+    public boolean isDisconnected() {
+        return disconnectedAt != -1;
     }
 
     @NotNull

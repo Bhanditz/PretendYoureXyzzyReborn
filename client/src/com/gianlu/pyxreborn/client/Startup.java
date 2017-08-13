@@ -63,12 +63,20 @@ public class Startup {
                         .name(Fields.NICKNAME.toString())
                         .text("Insert your nickname:")
                         .required(true)
+                        .build(),
+                new InputPrompt.Builder()
+                        .name(Fields.SESSION_ID.toString())
+                        .text("SID (empty if you're not reconnecting):")
+                        .defaultValue("")
+                        .required(false)
                         .build());
 
         Logger.setEnabled(((ConfirmationAnswer) result.get(0)).isConfirmed());
 
+        String sid = ((InputAnswer) result.get(3)).getAnswer();
         startup.client = new Client(URI.create(((InputAnswer) result.get(1)).getAnswer()),
-                ((InputAnswer) result.get(2)).getAnswer());
+                ((InputAnswer) result.get(2)).getAnswer(),
+                sid.isEmpty() ? null : sid);
 
         if (startup.client.connectBlocking()) {
             startup.mainMenu();

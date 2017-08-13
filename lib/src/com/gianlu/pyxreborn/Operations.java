@@ -8,7 +8,8 @@ public enum Operations {
     GET_GAMES_LIST("ggl"),
     GET_USERS_LIST("gul"),
     CREATE_GAME("cg"),
-    JOIN_GAME("jg");
+    JOIN_GAME("jg"),
+    START_GAME("sg");
 
     private final String val;
 

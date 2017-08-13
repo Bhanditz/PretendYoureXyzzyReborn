@@ -1,4 +1,4 @@
-package com.gianlu.pyxreborn.server;
+package com.gianlu.pyxreborn.server.Lists;
 
 import com.gianlu.pyxreborn.Events;
 import com.gianlu.pyxreborn.Exceptions.ErrorCodes;
@@ -6,6 +6,7 @@ import com.gianlu.pyxreborn.Exceptions.GeneralException;
 import com.gianlu.pyxreborn.Fields;
 import com.gianlu.pyxreborn.Models.Game;
 import com.gianlu.pyxreborn.Models.User;
+import com.gianlu.pyxreborn.server.PyxServerAdapter;
 import com.google.gson.JsonObject;
 import org.jetbrains.annotations.Nullable;
 
@@ -100,6 +101,7 @@ public class ConnectedUsers extends ArrayList<User> {
         } else {
             Game game = server.games.playingIn(user);
             if (game != null) server.games.leaveGame(game, user);
+
             remove(user);
 
             JsonObject obj = new JsonObject();

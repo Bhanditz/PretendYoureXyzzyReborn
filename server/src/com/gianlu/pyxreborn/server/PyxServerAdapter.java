@@ -3,10 +3,12 @@ package com.gianlu.pyxreborn.server;
 import com.gianlu.pyxreborn.Exceptions.ErrorCodes;
 import com.gianlu.pyxreborn.Exceptions.GeneralException;
 import com.gianlu.pyxreborn.Fields;
-import com.gianlu.pyxreborn.Models.CardSet;
 import com.gianlu.pyxreborn.Models.Game;
 import com.gianlu.pyxreborn.Models.Player;
 import com.gianlu.pyxreborn.Models.User;
+import com.gianlu.pyxreborn.server.Lists.CardSets;
+import com.gianlu.pyxreborn.server.Lists.ConnectedUsers;
+import com.gianlu.pyxreborn.server.Lists.Games;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -20,7 +22,6 @@ import org.java_websocket.server.WebSocketServer;
 import org.jetbrains.annotations.Nullable;
 
 import java.net.InetSocketAddress;
-import java.util.List;
 import java.util.Objects;
 import java.util.logging.Logger;
 
@@ -29,10 +30,10 @@ public abstract class PyxServerAdapter extends WebSocketServer {
     public final ConnectedUsers users;
     public final Games games;
     public final Config config;
-    private final List<CardSet> cardSets;
+    public final CardSets cardSets;
     private final JsonParser parser;
 
-    public PyxServerAdapter(Config config, List<CardSet> cardSets) {
+    public PyxServerAdapter(Config config, CardSets cardSets) {
         super(new InetSocketAddress(config.serverPort));
         this.config = config;
         this.users = new ConnectedUsers(this);

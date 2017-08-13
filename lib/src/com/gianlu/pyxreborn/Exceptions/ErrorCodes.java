@@ -11,7 +11,11 @@ public enum ErrorCodes {
     ALREADY_IN_GAME("aig"),
     GAME_DOESNT_EXIST("gde"),
     GAME_FULL("gf"),
-    INVALID_SID("isid");
+    INVALID_SID("isid"),
+    NOT_GAME_HOST("ngh"),
+    GAME_NOT_STARTED("gns"),
+    GAME_NOT_ENOUGH_PLAYERS("gnep"),
+    GAME_NOT_ENOUGH_CARDS("gnec");
 
     private final String val;
 

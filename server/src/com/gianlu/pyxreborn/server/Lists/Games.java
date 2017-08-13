@@ -1,4 +1,4 @@
-package com.gianlu.pyxreborn.server;
+package com.gianlu.pyxreborn.server.Lists;
 
 import com.gianlu.pyxreborn.Annotations.AdminOnly;
 import com.gianlu.pyxreborn.Events;
@@ -9,6 +9,8 @@ import com.gianlu.pyxreborn.KickReason;
 import com.gianlu.pyxreborn.Models.Game;
 import com.gianlu.pyxreborn.Models.Player;
 import com.gianlu.pyxreborn.Models.User;
+import com.gianlu.pyxreborn.server.GameManager;
+import com.gianlu.pyxreborn.server.PyxServerAdapter;
 import com.google.gson.JsonObject;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -20,10 +22,12 @@ import java.util.Random;
 public class Games extends ArrayList<Game> {
     private final PyxServerAdapter server;
     private final int maxGames;
+    private final ManagedGames managedGames;
 
     public Games(PyxServerAdapter server) {
         this.server = server;
         this.maxGames = server.config.maxGames;
+        this.managedGames = new ManagedGames();
     }
 
     public int getMax() {
@@ -44,6 +48,17 @@ public class Games extends ArrayList<Game> {
         server.broadcastMessage(obj);
 
         return game;
+    }
+
+    @Nullable
+    public GameManager getGameManagerFor(int gid) {
+        return managedGames.findGameManagerByGameId(gid);
+    }
+
+    public void startGame(Game game) throws GeneralException {
+        GameManager manager = new GameManager(server, game);
+        manager.start();
+        managedGames.add(manager);
     }
 
     @Nullable
@@ -150,5 +165,17 @@ public class Games extends ArrayList<Game> {
                 return game;
 
         return null;
+    }
+
+    private class ManagedGames extends ArrayList<GameManager> {
+
+        @Nullable
+        public GameManager findGameManagerByGameId(int gid) {
+            for (GameManager game : this)
+                if (game.game.gid == gid)
+                    return game;
+
+            return null;
+        }
     }
 }

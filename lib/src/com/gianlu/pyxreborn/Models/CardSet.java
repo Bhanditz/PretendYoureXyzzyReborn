@@ -13,6 +13,14 @@ public class CardSet {
     public final List<WhiteCard> whiteCards;
     public final List<BlackCard> blackCards;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        CardSet cardSet = (CardSet) o;
+        return id == cardSet.id;
+    }
+
     public CardSet(int id, boolean active, String name, boolean baseDeck, String description, int weight) {
         this.id = id;
         this.active = active;

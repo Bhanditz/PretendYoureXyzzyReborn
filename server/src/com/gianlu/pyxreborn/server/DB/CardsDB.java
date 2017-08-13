@@ -14,8 +14,13 @@ import java.util.Map;
 public class CardsDB {
     private final Connection db;
 
-    public CardsDB(Config config) throws SQLException, ClassNotFoundException {
-        Class.forName("org.sqlite.JDBC");
+    public CardsDB(Config config) throws SQLException {
+        try {
+            Class.forName("org.sqlite.JDBC");
+        } catch (ClassNotFoundException ex) {
+            throw new RuntimeException(ex);
+        }
+
         db = DriverManager.getConnection("jdbc:sqlite:" + config.cardsDatabase.getAbsolutePath());
         db.setAutoCommit(false);
     }

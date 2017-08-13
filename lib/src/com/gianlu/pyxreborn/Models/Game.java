@@ -44,13 +44,15 @@ public class Game implements Jsonable {
     }
 
     public static class Options {
-        private static final Options DEFAULT = new Options(10, 10);
+        private static final Options DEFAULT = new Options(10, 10, new ArrayList<>());
         public final int maxPlayers;
         public final int maxSpectators;
+        public final List<Integer> cardSetIds;
 
-        public Options(int maxPlayers, int maxSpectators) {
+        public Options(int maxPlayers, int maxSpectators, List<Integer> cardSetIds) {
             this.maxPlayers = maxPlayers;
             this.maxSpectators = maxSpectators;
+            this.cardSetIds = cardSetIds;
         }
     }
 }

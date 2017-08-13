@@ -18,11 +18,13 @@ import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
-// TODO: Should implement #sendMessageBlocking but I have no idea on how to do it
 public abstract class PyxClientAdapter extends WebSocketClient {
     private final Map<Integer, IMessage> requests;
     private final JsonParser parser;
+    private final Object waitingForResponse = new Object();
     private String sid;
+    private PyxException blockingEx;
+    private JsonObject blockingResp;
 
     public PyxClientAdapter(URI serverUri, String nickname) {
         super(serverUri, new NicknameDraft(nickname));
@@ -46,8 +48,24 @@ public abstract class PyxClientAdapter extends WebSocketClient {
         if (id == null) return;
 
         IMessage listener = requests.remove(id.getAsInt());
-        if (obj.has(Fields.ERROR_CODE.toString())) listener.onException(new PyxException(obj));
-        else listener.onMessage(obj);
+        if (listener instanceof IMessageBlocking) {
+            if (obj.has(Fields.ERROR_CODE.toString())) {
+                blockingEx = new PyxException(obj);
+                blockingResp = null;
+                synchronized (waitingForResponse) {
+                    waitingForResponse.notifyAll();
+                }
+            } else {
+                blockingEx = null;
+                blockingResp = obj;
+                synchronized (waitingForResponse) {
+                    waitingForResponse.notifyAll();
+                }
+            }
+        } else {
+            if (obj.has(Fields.ERROR_CODE.toString())) listener.onException(new PyxException(obj));
+            else listener.onMessage(obj);
+        }
 
         Logger.info("Message received: " + message);
     }
@@ -58,6 +76,29 @@ public abstract class PyxClientAdapter extends WebSocketClient {
         req.addProperty(Fields.OPERATION.toString(), op.toString());
         req.addProperty(Fields.ID.toString(), String.valueOf(new Random().nextInt()));
         return req;
+    }
+
+    public JsonObject sendMessageBlocking(JsonObject req) throws InterruptedException, PyxException {
+        JsonElement id = req.get(Fields.ID.toString());
+        if (id == null) throw new IllegalArgumentException("The request should contain an id!");
+
+        requests.put(id.getAsInt(), new IMessageBlocking() {
+            @Override
+            public void onMessage(JsonObject resp) {
+
+            }
+
+            @Override
+            public void onException(Exception ex) {
+
+            }
+        });
+        send(req.toString());
+        synchronized (waitingForResponse) {
+            waitingForResponse.wait();
+            if (blockingResp == null) throw blockingEx;
+            return blockingResp;
+        }
     }
 
     public void sendMessage(JsonObject req, IMessage listener) {
@@ -82,6 +123,9 @@ public abstract class PyxClientAdapter extends WebSocketClient {
         void onMessage(JsonObject resp);
 
         void onException(Exception ex);
+    }
+
+    private interface IMessageBlocking extends IMessage {
     }
 
     private static class NicknameDraft extends Draft_6455 {

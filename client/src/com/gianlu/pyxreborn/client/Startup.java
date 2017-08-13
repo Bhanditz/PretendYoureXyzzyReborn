@@ -12,6 +12,7 @@ import com.gianlu.consoleui.Input.InputAnswer;
 import com.gianlu.consoleui.Input.InputPrompt;
 import com.gianlu.consoleui.Input.InputValidator;
 import com.gianlu.consoleui.InvalidInputException;
+import com.gianlu.pyxreborn.Exceptions.PyxException;
 import com.gianlu.pyxreborn.Fields;
 import com.gianlu.pyxreborn.Operations;
 import com.google.gson.JsonArray;
@@ -76,35 +77,30 @@ public class Startup {
         }
     }
 
-    private void createGame() {
-        client.sendMessage(client.createRequest(Operations.CREATE_GAME), new PyxClientAdapter.IMessage() {
-            @Override
-            public void onMessage(JsonObject resp) {
-                Logger.info("Game created: " + resp);
-                joinGame(resp.get(Fields.GID.toString()).getAsInt());
-            }
+    private void gameJoined(int gid) {
+        Logger.info("Game joined! (" + gid + ")");
+        // TODO: Game logic goes here
+    }
 
-            @Override
-            public void onException(Exception ex) {
-                Logger.severe(ex);
-            }
-        });
+    private void createGame() {
+        try {
+            JsonObject resp = client.sendMessageBlocking(client.createRequest(Operations.CREATE_GAME));
+            gameJoined(resp.get(Fields.GID.toString()).getAsInt());
+        } catch (InterruptedException | PyxException ex) {
+            Logger.severe(ex);
+        }
     }
 
     private void joinGame(int gid) {
         JsonObject req = client.createRequest(Operations.JOIN_GAME);
         req.addProperty(Fields.GID.toString(), gid);
-        client.sendMessage(req, new PyxClientAdapter.IMessage() {
-            @Override
-            public void onMessage(JsonObject resp) {
-                Logger.info("Game joined: " + resp);
-            }
 
-            @Override
-            public void onException(Exception ex) {
-                Logger.severe(ex);
-            }
-        });
+        try {
+            JsonObject resp = client.sendMessageBlocking(req);
+            gameJoined(resp.get(Fields.GID.toString()).getAsInt());
+        } catch (InterruptedException | PyxException ex) {
+            Logger.severe(ex);
+        }
     }
 
     private void mainMenu() {
@@ -126,77 +122,67 @@ public class Startup {
 
         switch (next) {
             case GET_GAMES_LIST:
-                client.sendMessage(client.createRequest(Operations.GET_GAMES_LIST), new PyxClientAdapter.IMessage() {
-                    @Override
-                    public void onMessage(JsonObject resp) {
-                        JsonArray games = resp.getAsJsonArray(Fields.GAMES_LIST.toString());
-                        if (games.size() == 0) {
-                            try {
-                                ConfirmationAnswer answer = prompt.prompt(new ConfirmationPrompt.Builder()
-                                        .text("There are no games! Do you want to create one?")
-                                        .defaultValue(Value.YES)
-                                        .name("createGame")
-                                        .build());
-
-                                if (answer.isConfirmed()) createGame();
-                                else mainMenu();
-                            } catch (IOException ex) {
-                                throw new RuntimeException(ex);
-                            }
-
-                            return;
-                        }
-
-                        ListChoicePrompt.Builder builder = new ListChoicePrompt.Builder();
-                        builder.name(Fields.GID.toString())
-                                .text("Select a game to join:");
-
-                        for (JsonElement game : games)
-                            builder.newItem()
-                                    .text(game.getAsJsonObject()
-                                            .getAsJsonObject(Fields.HOST.toString())
-                                            .get(Fields.NICKNAME.toString()).getAsString())
-                                    .name(game.getAsJsonObject()
-                                            .get(Fields.GID.toString()).getAsString())
-                                    .add();
-
+                try {
+                    JsonObject resp = client.sendMessageBlocking(client.createRequest(Operations.GET_GAMES_LIST));
+                    JsonArray games = resp.getAsJsonArray(Fields.GAMES_LIST.toString());
+                    if (games.size() == 0) {
                         try {
-                            ChoiceAnswer answer = prompt.prompt(builder.build());
-                            joinGame(Integer.parseInt(answer.getName()));
+                            ConfirmationAnswer answer = prompt.prompt(new ConfirmationPrompt.Builder()
+                                    .text("There are no games! Do you want to create one?")
+                                    .defaultValue(Value.YES)
+                                    .name("createGame")
+                                    .build());
+
+                            if (answer.isConfirmed()) createGame();
+                            else mainMenu();
                         } catch (IOException ex) {
                             throw new RuntimeException(ex);
                         }
+
+                        return;
                     }
 
-                    @Override
-                    public void onException(Exception ex) {
-                        Logger.severe(ex);
+                    ListChoicePrompt.Builder builder = new ListChoicePrompt.Builder();
+                    builder.name(Fields.GID.toString())
+                            .text("Select a game to join:");
+
+                    for (JsonElement game : games)
+                        builder.newItem()
+                                .text(game.getAsJsonObject()
+                                        .getAsJsonObject(Fields.HOST.toString())
+                                        .get(Fields.NICKNAME.toString()).getAsString())
+                                .name(game.getAsJsonObject()
+                                        .get(Fields.GID.toString()).getAsString())
+                                .add();
+
+                    try {
+                        ChoiceAnswer answer = prompt.prompt(builder.build());
+                        joinGame(Integer.parseInt(answer.getName()));
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
                     }
-                });
+                } catch (InterruptedException | PyxException ex) {
+                    Logger.severe(ex);
+                }
                 break;
             case GET_USERS_LIST:
-                client.sendMessage(client.createRequest(Operations.GET_USERS_LIST), new PyxClientAdapter.IMessage() {
-                    @Override
-                    public void onMessage(JsonObject resp) {
-                        JsonArray users = resp.getAsJsonArray(Fields.USERS_LIST.toString());
+                try {
+                    JsonObject resp = client.sendMessageBlocking(client.createRequest(Operations.GET_USERS_LIST));
+                    JsonArray users = resp.getAsJsonArray(Fields.USERS_LIST.toString());
 
-                        StringBuilder builder = new StringBuilder();
-                        boolean first = true;
-                        for (JsonElement element : users) {
-                            if (!first) builder.append(", ");
-                            first = false;
-                            builder.append(element.getAsJsonObject().get(Fields.NICKNAME.toString()).getAsString());
-                        }
-
-                        System.out.println("Online users: " + builder.toString());
-                        mainMenu();
+                    StringBuilder builder = new StringBuilder();
+                    boolean first = true;
+                    for (JsonElement element : users) {
+                        if (!first) builder.append(", ");
+                        first = false;
+                        builder.append(element.getAsJsonObject().get(Fields.NICKNAME.toString()).getAsString());
                     }
 
-                    @Override
-                    public void onException(Exception ex) {
-                        Logger.severe(ex);
-                    }
-                });
+                    System.out.println("Online users: " + builder.toString());
+                    mainMenu();
+                } catch (InterruptedException | PyxException ex) {
+                    Logger.severe(ex);
+                }
                 break;
             case CREATE_GAME:
                 createGame();

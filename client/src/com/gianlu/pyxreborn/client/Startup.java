@@ -2,7 +2,6 @@ package com.gianlu.pyxreborn.client;
 
 import com.gianlu.consoleui.Answer;
 import com.gianlu.consoleui.Choice.ChoiceAnswer;
-import com.gianlu.consoleui.Choice.ChoicePrompt;
 import com.gianlu.consoleui.Choice.List.ListChoicePrompt;
 import com.gianlu.consoleui.Confirmation.ConfirmationAnswer;
 import com.gianlu.consoleui.Confirmation.ConfirmationPrompt;
@@ -15,11 +14,11 @@ import com.gianlu.consoleui.InvalidInputException;
 import com.gianlu.pyxreborn.Exceptions.PyxException;
 import com.gianlu.pyxreborn.Fields;
 import com.gianlu.pyxreborn.Operations;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import javafx.util.Pair;
 import org.fusesource.jansi.AnsiConsole;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.net.URI;
@@ -28,7 +27,6 @@ import java.util.List;
 
 public class Startup {
     private static final String LOGGING = "logging";
-    private static final String NEXT_ACTION = "nextAction";
     private final ConsolePrompt prompt = new ConsolePrompt();
     private Client client;
 
@@ -86,116 +84,65 @@ public class Startup {
         }
     }
 
-    private void gameJoined(int gid) {
-        Logger.info("Game joined! (" + gid + ")");
-        // TODO: Game logic goes here
+    @Nullable
+    private Pair<String, String> askForRequestParam() throws IOException {
+        ConfirmationAnswer confirm = prompt.prompt(new ConfirmationPrompt.Builder()
+                .text("Do you want to add additional params to the request?")
+                .defaultValue(Value.NO)
+                .name("additional")
+                .build());
+
+        if (confirm.isConfirmed()) {
+            List<? extends Answer> pair = prompt.prompt(
+                    new InputPrompt.Builder()
+                            .text("Key:")
+                            .name("key")
+                            .required(true)
+                            .build(),
+                    new InputPrompt.Builder()
+                            .text("Value:")
+                            .name("value")
+                            .required(true)
+                            .build());
+
+            return new Pair<>(((InputAnswer) pair.get(0)).getAnswer(), ((InputAnswer) pair.get(1)).getAnswer());
+        } else {
+            return null;
+        }
     }
 
-    private void createGame() {
+    private void mainMenu() throws IOException {
+        ListChoicePrompt.Builder builder = new ListChoicePrompt.Builder();
+        builder.text("Request operation:")
+                .name("req");
+
+        for (Operations op : Operations.values())
+            builder.newItem().name(op.toString()).text(op.name()).add();
+
+        ChoiceAnswer answer = prompt.prompt(builder.build());
+        Operations op = Operations.parse(answer.getName());
+
+        JsonObject req = client.createRequest(op);
+
+        Pair<String, String> additionalParams;
+        do {
+            additionalParams = askForRequestParam();
+            if (additionalParams != null) req.addProperty(additionalParams.getKey(), additionalParams.getValue());
+        } while (additionalParams != null);
+
+        System.out.println("REQUEST: " + req);
+
+        JsonObject resp;
         try {
-            JsonObject resp = client.sendMessageBlocking(client.createRequest(Operations.CREATE_GAME));
-            gameJoined(resp.get(Fields.GID.toString()).getAsInt());
+            resp = client.sendMessageBlocking(req);
         } catch (InterruptedException | PyxException ex) {
             Logger.severe(ex);
-        }
-    }
-
-    private void joinGame(int gid) {
-        JsonObject req = client.createRequest(Operations.JOIN_GAME);
-        req.addProperty(Fields.GID.toString(), gid);
-
-        try {
-            JsonObject resp = client.sendMessageBlocking(req);
-            gameJoined(resp.get(Fields.GID.toString()).getAsInt());
-        } catch (InterruptedException | PyxException ex) {
-            Logger.severe(ex);
-        }
-    }
-
-    private void mainMenu() {
-        ChoiceAnswer result;
-        try {
-            result = prompt.prompt(new ChoicePrompt.Builder()
-                    .name(NEXT_ACTION)
-                    .text("What you wanna do next?")
-                    .newItem().text("List games").key('g').name(Operations.GET_GAMES_LIST.toString()).add()
-                    .newItem().text("List users").key('u').name(Operations.GET_USERS_LIST.toString()).add()
-                    .newItem().text("Create game").key('c').name(Operations.CREATE_GAME.toString()).add()
-                    .build());
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
+            mainMenu();
+            return;
         }
 
-        Operations next = Operations.parse(result.getName());
-        if (next == null) throw new IllegalArgumentException("next can't be null!");
+        System.out.println("RESPONSE: " + resp);
 
-        switch (next) {
-            case GET_GAMES_LIST:
-                try {
-                    JsonObject resp = client.sendMessageBlocking(client.createRequest(Operations.GET_GAMES_LIST));
-                    JsonArray games = resp.getAsJsonArray(Fields.GAMES_LIST.toString());
-                    if (games.size() == 0) {
-                        try {
-                            ConfirmationAnswer answer = prompt.prompt(new ConfirmationPrompt.Builder()
-                                    .text("There are no games! Do you want to create one?")
-                                    .defaultValue(Value.YES)
-                                    .name("createGame")
-                                    .build());
-
-                            if (answer.isConfirmed()) createGame();
-                            else mainMenu();
-                        } catch (IOException ex) {
-                            throw new RuntimeException(ex);
-                        }
-
-                        return;
-                    }
-
-                    ListChoicePrompt.Builder builder = new ListChoicePrompt.Builder();
-                    builder.name(Fields.GID.toString())
-                            .text("Select a game to join:");
-
-                    for (JsonElement game : games)
-                        builder.newItem()
-                                .text(game.getAsJsonObject()
-                                        .getAsJsonObject(Fields.HOST.toString())
-                                        .get(Fields.NICKNAME.toString()).getAsString())
-                                .name(game.getAsJsonObject()
-                                        .get(Fields.GID.toString()).getAsString())
-                                .add();
-
-                    try {
-                        ChoiceAnswer answer = prompt.prompt(builder.build());
-                        joinGame(Integer.parseInt(answer.getName()));
-                    } catch (IOException ex) {
-                        throw new RuntimeException(ex);
-                    }
-                } catch (InterruptedException | PyxException ex) {
-                    Logger.severe(ex);
-                }
-                break;
-            case GET_USERS_LIST:
-                try {
-                    JsonObject resp = client.sendMessageBlocking(client.createRequest(Operations.GET_USERS_LIST));
-                    JsonArray users = resp.getAsJsonArray(Fields.USERS_LIST.toString());
-
-                    StringBuilder builder = new StringBuilder();
-                    boolean first = true;
-                    for (JsonElement element : users) {
-                        if (!first) builder.append(", ");
-                        first = false;
-                        builder.append(element.getAsJsonObject().get(Fields.NICKNAME.toString()).getAsString());
-                    }
-
-                    System.out.println("Online users: " + builder.toString());
-                    mainMenu();
-                } catch (InterruptedException | PyxException ex) {
-                    Logger.severe(ex);
-                }
-                break;
-            case CREATE_GAME:
-                createGame();
-                break;
-        }
+        mainMenu();
     }
 }

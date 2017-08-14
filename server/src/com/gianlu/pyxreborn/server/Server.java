@@ -3,20 +3,18 @@ package com.gianlu.pyxreborn.server;
 import com.gianlu.pyxreborn.Exceptions.ErrorCodes;
 import com.gianlu.pyxreborn.Exceptions.GeneralException;
 import com.gianlu.pyxreborn.Fields;
-import com.gianlu.pyxreborn.Models.CardSet;
 import com.gianlu.pyxreborn.Models.User;
 import com.gianlu.pyxreborn.Operations;
 import com.gianlu.pyxreborn.server.Handlers.BaseHandler;
 import com.gianlu.pyxreborn.server.Handlers.Handlers;
+import com.gianlu.pyxreborn.server.Lists.CardSets;
 import com.google.gson.JsonObject;
 import org.java_websocket.WebSocket;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
-
 public class Server extends PyxServerAdapter {
 
-    public Server(Config config, List<CardSet> sets) {
+    public Server(Config config, CardSets sets) {
         super(config, sets);
     }
 

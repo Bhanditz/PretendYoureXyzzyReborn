@@ -19,7 +19,7 @@ public abstract class BaseHandlerWithGame extends BaseHandlerWithUser {
     public abstract JsonObject handleRequest(Server server, @NotNull User user, @NotNull Game game, JsonObject request, JsonObject response) throws GeneralException;
 
     @Override
-    public JsonObject handleRequest(Server server, @NotNull User user, JsonObject request, JsonObject response) throws GeneralException {
+    public final JsonObject handleRequest(Server server, @NotNull User user, JsonObject request, JsonObject response) throws GeneralException {
         JsonElement gid = request.get(Fields.GID.toString());
         if (gid == null) throw new GeneralException(ErrorCodes.INVALID_REQUEST);
         Game game = server.games.findGameById(gid.getAsInt());

@@ -9,7 +9,9 @@ public enum Operations {
     GET_USERS_LIST("gul"),
     CREATE_GAME("cg"),
     JOIN_GAME("jg"),
-    START_GAME("sg");
+    START_GAME("sg"),
+    PLAY_CARD("pc"),
+    JUDGE("j");
 
     private final String val;
 

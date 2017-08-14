@@ -17,7 +17,18 @@ public enum Fields {
     USER("u"),
     SUCCESSFUL("suc"),
     KICKED("k"),
-    IP("ip");
+    IP("ip"),
+    HAND("H"),
+    TEXT("t"),
+    WATERMARK("w"),
+    NUM_DRAW("nd"),
+    NUM_PICK("np"),
+    JUDGE("j"),
+    BLACK_CARD("bc"),
+    CARD_ID("cid"),
+    PLAYED_CARDS("pc"),
+    WINNER("W"),
+    WINNER_CARD_ID("wci");
 
     private final String val;
 

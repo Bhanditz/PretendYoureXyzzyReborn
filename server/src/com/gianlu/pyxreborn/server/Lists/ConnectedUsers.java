@@ -6,6 +6,7 @@ import com.gianlu.pyxreborn.Exceptions.GeneralException;
 import com.gianlu.pyxreborn.Fields;
 import com.gianlu.pyxreborn.Models.Game;
 import com.gianlu.pyxreborn.Models.User;
+import com.gianlu.pyxreborn.Utils;
 import com.gianlu.pyxreborn.server.PyxServerAdapter;
 import com.google.gson.JsonObject;
 import org.jetbrains.annotations.Nullable;
@@ -54,8 +55,7 @@ public class ConnectedUsers extends ArrayList<User> {
 
         User user = new User(nickname, null, address);
 
-        JsonObject obj = new JsonObject();
-        obj.addProperty(Fields.EVENT.toString(), Events.NEW_USER.toString());
+        JsonObject obj = Utils.event(Events.NEW_USER);
         obj.addProperty(Fields.NICKNAME.toString(), nickname);
         server.broadcastMessage(obj); // This way we don't send the broadcast to the user itself
 
@@ -104,9 +104,7 @@ public class ConnectedUsers extends ArrayList<User> {
 
             remove(user);
 
-            JsonObject obj = new JsonObject();
-            obj.addProperty(Fields.EVENT.toString(), Events.USER_LEFT.toString());
-            server.broadcastMessage(obj);
+            server.broadcastMessage(Utils.event(Events.USER_LEFT));
         }
     }
 

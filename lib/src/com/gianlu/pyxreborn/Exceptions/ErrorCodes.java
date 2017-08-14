@@ -15,7 +15,11 @@ public enum ErrorCodes {
     NOT_GAME_HOST("ngh"),
     GAME_NOT_STARTED("gns"),
     GAME_NOT_ENOUGH_PLAYERS("gnep"),
-    GAME_NOT_ENOUGH_CARDS("gnec");
+    GAME_NOT_ENOUGH_CARDS("gnec"),
+    NOT_IN_THIS_GAME("nitg"),
+    GAME_CARD_NOT_IN_YOUR_HAND("gcniyh"),
+    GAME_NOT_YOUR_TURN("gnyt"),
+    GAME_CARD_NOT_PLAYED("gcnp");
 
     private final String val;
 

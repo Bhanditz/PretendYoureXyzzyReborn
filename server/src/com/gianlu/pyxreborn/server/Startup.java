@@ -2,11 +2,10 @@ package com.gianlu.pyxreborn.server;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
-import com.gianlu.pyxreborn.Models.CardSet;
 import com.gianlu.pyxreborn.server.DB.CardsDB;
+import com.gianlu.pyxreborn.server.Lists.CardSets;
 
 import java.sql.SQLException;
-import java.util.List;
 
 public class Startup {
     public static void main(String[] args) throws SQLException {
@@ -26,7 +25,7 @@ public class Startup {
         }
 
         CardsDB db = new CardsDB(config);
-        List<CardSet> sets = db.loadCardSets();
+        CardSets sets = db.loadCardSets();
 
         Server server = new Server(config, sets);
         server.start();

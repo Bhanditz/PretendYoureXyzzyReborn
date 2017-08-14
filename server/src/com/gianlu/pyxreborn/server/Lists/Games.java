@@ -9,6 +9,7 @@ import com.gianlu.pyxreborn.KickReason;
 import com.gianlu.pyxreborn.Models.Game;
 import com.gianlu.pyxreborn.Models.Player;
 import com.gianlu.pyxreborn.Models.User;
+import com.gianlu.pyxreborn.Utils;
 import com.gianlu.pyxreborn.server.GameManager;
 import com.gianlu.pyxreborn.server.PyxServerAdapter;
 import com.google.gson.JsonObject;
@@ -42,8 +43,7 @@ public class Games extends ArrayList<Game> {
         game.players.add(new Player(host));
         add(game);
 
-        JsonObject obj = new JsonObject();
-        obj.addProperty(Fields.EVENT.toString(), Events.NEW_GAME.toString());
+        JsonObject obj = Utils.event(Events.NEW_GAME);
         obj.addProperty(Fields.GID.toString(), game.gid);
         server.broadcastMessage(obj);
 
@@ -65,7 +65,7 @@ public class Games extends ArrayList<Game> {
     public Game playingIn(User user) {
         for (Game game : this)
             for (Player player : game.players)
-                if (Objects.equals(player.getUser(), user))
+                if (Objects.equals(player.user, user))
                     return game;
 
         return null;
@@ -73,9 +73,8 @@ public class Games extends ArrayList<Game> {
 
     public void leaveGame(@NotNull Game game, @NotNull User user) {
         for (Player player : new ArrayList<>(game.players)) {
-            if (Objects.equals(player.getUser(), user)) {
-                JsonObject obj = new JsonObject();
-                obj.addProperty(Fields.EVENT.toString(), Events.GAME_PLAYER_LEFT.toString());
+            if (Objects.equals(player.user, user)) {
+                JsonObject obj = Utils.event(Events.GAME_PLAYER_LEFT);
                 obj.add(Fields.USER.toString(), user.toJson());
                 server.broadcastMessageToPlayers(game, obj);  // Don't broadcast this to the player itself
 
@@ -113,9 +112,7 @@ public class Games extends ArrayList<Game> {
 
         remove(game);
 
-        JsonObject obj = new JsonObject();
-        obj.addProperty(Fields.EVENT.toString(), Events.GAME_REMOVED.toString());
-        server.broadcastMessage(obj);
+        server.broadcastMessage(Utils.event(Events.GAME_REMOVED));
     }
 
     public void kickPlayer(@NotNull Game game, @NotNull Player user, KickReason reason) {
@@ -125,7 +122,7 @@ public class Games extends ArrayList<Game> {
 
                 JsonObject obj = new JsonObject();
                 obj.addProperty(Fields.KICKED.toString(), reason.toString());
-                server.sendMessage(user.getUser(), obj);
+                server.sendMessage(user.user, obj);
             }
         }
 
@@ -150,8 +147,7 @@ public class Games extends ArrayList<Game> {
         if (playingIn(user) != null) throw new GeneralException(ErrorCodes.ALREADY_IN_GAME);
         if (game.players.size() >= game.options.maxPlayers) throw new GeneralException(ErrorCodes.GAME_FULL);
 
-        JsonObject obj = new JsonObject();
-        obj.addProperty(Fields.EVENT.toString(), Events.GAME_NEW_PLAYER.toString());
+        JsonObject obj = Utils.event(Events.GAME_NEW_PLAYER);
         obj.add(Fields.USER.toString(), user.toJson());
         server.broadcastMessageToPlayers(game, obj); // Don't broadcast this to the player itself
 

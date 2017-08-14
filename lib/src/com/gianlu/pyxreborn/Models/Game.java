@@ -3,9 +3,11 @@ package com.gianlu.pyxreborn.Models;
 import com.gianlu.pyxreborn.Fields;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class Game implements Jsonable {
     public final int gid;
@@ -41,6 +43,15 @@ public class Game implements Jsonable {
         if (o == null || getClass() != o.getClass()) return false;
         Game game = (Game) o;
         return gid == game.gid;
+    }
+
+    @Nullable
+    public Player findPlayerByNickname(String nickname) {
+        for (Player player : players)
+            if (Objects.equals(player.user.nickname, nickname))
+                return player;
+
+        return null;
     }
 
     public static class Options {

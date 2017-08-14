@@ -4,11 +4,10 @@ import com.gianlu.pyxreborn.Models.BlackCard;
 import com.gianlu.pyxreborn.Models.CardSet;
 import com.gianlu.pyxreborn.Models.WhiteCard;
 import com.gianlu.pyxreborn.server.Config;
+import com.gianlu.pyxreborn.server.Lists.CardSets;
 
 import java.sql.*;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class CardsDB {
@@ -55,8 +54,8 @@ public class CardsDB {
         return blackCards;
     }
 
-    public List<CardSet> loadCardSets() throws SQLException {
-        List<CardSet> sets = new ArrayList<>();
+    public CardSets loadCardSets() throws SQLException {
+        CardSets sets = new CardSets();
         try (Statement statement = db.createStatement()) {
             try (ResultSet result = statement.executeQuery("SELECT * FROM card_set")) {
                 while (result.next()) {

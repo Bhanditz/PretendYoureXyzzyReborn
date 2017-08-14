@@ -82,6 +82,7 @@ public class Startup {
             startup.mainMenu();
         } else {
             Logger.severe(new Exception("Failed connecting!"));
+            System.exit(1);
         }
     }
 

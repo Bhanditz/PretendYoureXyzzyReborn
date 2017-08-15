@@ -10,7 +10,7 @@ public class Logger {
 
     public static void info(String str) {
         if (!enabled) return;
-        System.out.println(ansi().bg(Ansi.Color.WHITE).a(str));
+        System.out.println(ansi().fg(Ansi.Color.GREEN).bg(Ansi.Color.WHITE).a(str));
     }
 
     public static void severe(Throwable ex) {

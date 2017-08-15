@@ -88,6 +88,7 @@ public class CardsDB {
             }
         }
 
+        sets.sort(new CardSets.WeightComparator());
         return sets;
     }
 }

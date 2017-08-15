@@ -1,7 +1,5 @@
 package com.gianlu.pyxreborn;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import java.io.PrintWriter;
@@ -26,9 +24,9 @@ public class Utils {
         return obj;
     }
 
-    public static List<Integer> toIntegersList(JsonArray array) {
+    public static List<Integer> toIntegersList(String array) {
         List<Integer> integers = new ArrayList<>();
-        for (JsonElement element : array) integers.add(element.getAsInt());
+        for (String split : array.split(",")) integers.add(Integer.parseInt(split));
         return integers;
     }
 }

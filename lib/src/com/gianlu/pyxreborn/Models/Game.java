@@ -57,7 +57,7 @@ public class Game implements Jsonable {
 
     public enum Status {
         LOBBY,
-        PLAYING
+        JUDGING, PLAYING
     }
 
     public static class Options {

@@ -160,7 +160,7 @@ public class Games extends ArrayList<Game> {
         game.options = new Game.Options(
                 request.has(Fields.MAX_PLAYERS.toString()) ? request.get(Fields.MAX_PLAYERS.toString()).getAsInt() : game.options.maxPlayers,
                 request.has(Fields.MAX_SPECTATORS.toString()) ? request.get(Fields.MAX_SPECTATORS.toString()).getAsInt() : game.options.maxSpectators,
-                request.has(Fields.CARD_SET_IDS.toString()) ? Utils.toIntegersList(request.getAsJsonArray(Fields.MAX_PLAYERS.toString())) : game.options.cardSetIds);
+                request.has(Fields.CARD_SET_ID.toString()) ? Utils.toIntegersList(request.get(Fields.CARD_SET_ID.toString()).getAsString()) : game.options.cardSetIds);
     }
 
     @Nullable

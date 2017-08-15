@@ -122,9 +122,11 @@ public class ConnectedUsers extends ArrayList<User> {
         @Override
         public void run() {
             // Remove user if it's been disconnected for too long
-            for (User user : ConnectedUsers.this)
+            for (int i = size() - 1; i >= 0; i--) {
+                User user = get(i);
                 if (user.isDisconnected() && System.currentTimeMillis() - user.disconnectedAt >= reconnectDelay)
                     removeUser(user, false);
+            }
         }
     }
 }

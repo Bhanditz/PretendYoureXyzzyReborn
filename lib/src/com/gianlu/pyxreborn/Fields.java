@@ -31,7 +31,12 @@ public enum Fields {
     WINNER_CARD_ID("wci"),
     MAX_PLAYERS("mp"),
     MAX_SPECTATORS("ms"),
-    CARD_SET_IDS("csid");
+    CARD_SET_ID("csid"),
+    NAME("n"),
+    DESCRIPTION("d"),
+    WEIGHT("wh"),
+    WHITE_CARD("wc"),
+    CARD_SET("cs");
 
     private final String val;
 

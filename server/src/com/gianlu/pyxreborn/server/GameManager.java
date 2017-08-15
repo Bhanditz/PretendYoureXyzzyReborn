@@ -87,6 +87,7 @@ public class GameManager {
     }
 
     private void _nextRound() {
+        game.status = Game.Status.PLAYING;
         handDeal();
         round = new Round();
     }
@@ -108,7 +109,6 @@ public class GameManager {
         if (game.players.size() < 3) throw new GeneralException(ErrorCodes.GAME_NOT_ENOUGH_PLAYERS);
         loadCards();
 
-        game.status = Game.Status.PLAYING;
         nextRound();
     }
 
@@ -155,12 +155,10 @@ public class GameManager {
         }
 
         private void judge(@NotNull Player judge, @NotNull WhiteCard card) throws GeneralException {
-            if (judge != getJudge()) throw new GeneralException(ErrorCodes.GAME_NOT_YOUR_TURN);
+            if (judge != getJudge() || game.status != Game.Status.JUDGING)
+                throw new GeneralException(ErrorCodes.GAME_NOT_YOUR_TURN);
             Player winner = playedCards.findPlayerByCard(card);
-            if (winner == null) {
-                // TODO: What?!
-                return;
-            }
+            if (winner == null) throw new GeneralException(ErrorCodes.NOT_IN_THIS_GAME);
 
             JsonObject obj = Utils.event(Events.GAME_ROUND_ENDED);
             obj.add(Fields.WINNER.toString(), winner.toJson());
@@ -171,6 +169,7 @@ public class GameManager {
         }
 
         private void showCards() {
+            game.status = Game.Status.JUDGING;
             JsonObject obj = Utils.event(Events.GAME_JUDGING);
             JsonArray array = new JsonArray();
             List<List<WhiteCard>> played = new ArrayList<>(playedCards.values());
@@ -203,13 +202,14 @@ public class GameManager {
             PlayedCards() {
                 for (Player player : game.players)
                     if (player != getJudge())
-                        playedCards.put(player, null);
+                        put(player, null);
             }
 
             private void play(Player player, WhiteCard card) {
                 List<WhiteCard> cards = get(player);
                 if (cards == null) cards = new ArrayList<>();
                 cards.add(card);
+                put(player, cards);
             }
 
             @Nullable

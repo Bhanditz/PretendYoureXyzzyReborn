@@ -1,5 +1,9 @@
 package com.gianlu.pyxreborn;
 
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Objects;
+
 public enum Events {
     NEW_USER("nu"),
     USER_LEFT("ul"),
@@ -21,5 +25,14 @@ public enum Events {
     @Override
     public String toString() {
         return val;
+    }
+
+    @Nullable
+    public static Events parse(String val) {
+        for (Events event : values())
+            if (Objects.equals(event.val, val))
+                return event;
+
+        return null;
     }
 }

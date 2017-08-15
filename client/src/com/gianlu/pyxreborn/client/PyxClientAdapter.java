@@ -1,5 +1,6 @@
 package com.gianlu.pyxreborn.client;
 
+import com.gianlu.pyxreborn.Events;
 import com.gianlu.pyxreborn.Exceptions.PyxException;
 import com.gianlu.pyxreborn.Fields;
 import com.gianlu.pyxreborn.Operations;
@@ -47,9 +48,16 @@ public abstract class PyxClientAdapter extends WebSocketClient {
         Logger.info("Connection open! SID: " + sid);
     }
 
+    public abstract void onEvent(Events event, JsonObject request);
+
     @Override
     public void onMessage(String message) {
         JsonObject obj = parser.parse(message).getAsJsonObject();
+        if (obj.has(Fields.EVENT.toString())) {
+            onEvent(Events.parse(obj.get(Fields.EVENT.toString()).getAsString()), obj);
+            return;
+        }
+
         JsonElement id = obj.get(Fields.ID.toString());
         if (id == null) return;
 
@@ -72,8 +80,6 @@ public abstract class PyxClientAdapter extends WebSocketClient {
             if (obj.has(Fields.ERROR_CODE.toString())) listener.onException(new PyxException(obj));
             else listener.onMessage(obj);
         }
-
-        Logger.info("Message received: " + message);
     }
 
     public JsonObject createRequest(Operations op) {

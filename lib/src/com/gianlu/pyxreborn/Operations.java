@@ -12,7 +12,9 @@ public enum Operations {
     START_GAME("sg"),
     PLAY_CARD("pc"),
     JUDGE("j"),
-    CHANGE_GAME_OPTIONS("cgo");
+    CHANGE_GAME_OPTIONS("cgo"),
+    LIST_CARDS("lc"),
+    LIST_CARD_SETS("lcs");
 
     private final String val;
 

@@ -1,5 +1,9 @@
 package com.gianlu.pyxreborn.Exceptions;
 
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Objects;
+
 public enum ErrorCodes {
     TOO_MANY_USERS("tmu"),
     NICK_ALREADY_IN_USE("naiu"),
@@ -20,7 +24,8 @@ public enum ErrorCodes {
     GAME_CARD_NOT_IN_YOUR_HAND("gcniyh"),
     GAME_NOT_YOUR_TURN("gnyt"),
     GAME_CARD_NOT_PLAYED("gcnp"),
-    GAME_ALREADY_STARTED("gas");
+    GAME_ALREADY_STARTED("gas"),
+    INVALID_CARD_SET_ID("icsid");
 
     private final String val;
 
@@ -31,5 +36,14 @@ public enum ErrorCodes {
     @Override
     public String toString() {
         return val;
+    }
+
+    @Nullable
+    public static ErrorCodes parse(String val) {
+        for (ErrorCodes code : values())
+            if (Objects.equals(code.val, val))
+                return code;
+
+        return null;
     }
 }

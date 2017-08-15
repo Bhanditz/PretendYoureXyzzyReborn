@@ -1,6 +1,7 @@
 package com.gianlu.pyxreborn.Models;
 
 import com.gianlu.pyxreborn.Fields;
+import com.gianlu.pyxreborn.Utils;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import org.jetbrains.annotations.Nullable;
@@ -30,6 +31,7 @@ public class Game implements Jsonable {
         JsonObject obj = new JsonObject();
         obj.addProperty(Fields.GID.toString(), gid);
         obj.add(Fields.HOST.toString(), host.toJson());
+        obj.add(Fields.OPTIONS.toString(), options.toJson());
 
         JsonArray players = new JsonArray();
         for (Player player : this.players) players.add(player.toJson());
@@ -57,10 +59,11 @@ public class Game implements Jsonable {
 
     public enum Status {
         LOBBY,
-        JUDGING, PLAYING
+        JUDGING,
+        PLAYING
     }
 
-    public static class Options {
+    public static class Options implements Jsonable {
         private static final Options DEFAULT = new Options(10, 10, new ArrayList<>());
         public final int maxPlayers;
         public final int maxSpectators;
@@ -70,6 +73,15 @@ public class Game implements Jsonable {
             this.maxPlayers = maxPlayers;
             this.maxSpectators = maxSpectators;
             this.cardSetIds = cardSetIds;
+        }
+
+        @Override
+        public JsonObject toJson() {
+            JsonObject obj = new JsonObject();
+            obj.addProperty(Fields.MAX_PLAYERS.toString(), maxPlayers);
+            obj.addProperty(Fields.MAX_SPECTATORS.toString(), maxSpectators);
+            obj.add(Fields.CARD_SET_ID.toString(), Utils.toJsonArray(cardSetIds));
+            return obj;
         }
     }
 }

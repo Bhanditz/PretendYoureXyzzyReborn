@@ -2,6 +2,8 @@ import com.gianlu.pyxreborn.Events;
 import com.gianlu.pyxreborn.Exceptions.ErrorCodes;
 import com.gianlu.pyxreborn.Fields;
 import com.gianlu.pyxreborn.KickReason;
+import com.gianlu.pyxreborn.Models.Game;
+import com.gianlu.pyxreborn.Models.Player;
 import com.gianlu.pyxreborn.Operations;
 import org.jetbrains.annotations.TestOnly;
 import org.junit.jupiter.api.Assertions;
@@ -18,6 +20,8 @@ public class CheckEnums {
         checkDuplicatesInEnum(Operations.class, Operations.values());
         checkDuplicatesInEnum(ErrorCodes.class, ErrorCodes.values());
         checkDuplicatesInEnum(KickReason.class, KickReason.values());
+        checkDuplicatesInEnum(Game.Status.class, Game.Status.values());
+        checkDuplicatesInEnum(Player.Status.class, Player.Status.values());
     }
 
     @TestOnly

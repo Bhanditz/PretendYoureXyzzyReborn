@@ -38,7 +38,9 @@ public enum Fields {
     WHITE_CARD("wc"),
     CARD_SET("cs"),
     OPTIONS("o"),
-    GAME("g");
+    GAME("g"),
+    STATUS("s"),
+    SCORE("S");
 
     private final String val;
 

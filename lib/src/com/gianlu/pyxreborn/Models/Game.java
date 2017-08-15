@@ -58,9 +58,20 @@ public class Game implements Jsonable {
     }
 
     public enum Status {
-        LOBBY,
-        JUDGING,
-        PLAYING
+        LOBBY("l"),
+        JUDGING("j"),
+        PLAYING("p");
+
+        private final String val;
+
+        Status(String val) {
+            this.val = val;
+        }
+
+        @Override
+        public String toString() {
+            return val;
+        }
     }
 
     public static class Options implements Jsonable {

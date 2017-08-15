@@ -138,9 +138,14 @@ public class GameManager {
 
         Round() {
             nextJudge();
+            getJudge().status = Player.Status.WAITING_JUDGE;
             nextBlackCard();
 
             playedCards = new PlayedCards();
+
+            for (Player player : game.players)
+                if (player != getJudge())
+                    player.status = Player.Status.PLAYING;
 
             JsonObject obj = Utils.event(Events.GAME_NEW_ROUND);
             obj.add(Fields.JUDGE.toString(), getJudge().toJson());
@@ -151,6 +156,7 @@ public class GameManager {
         private void playCard(@NotNull Player player, @NotNull WhiteCard card) throws GeneralException {
             if (player == getJudge()) throw new GeneralException(ErrorCodes.GAME_NOT_YOUR_TURN);
             playedCards.play(player, card);
+            player.status = Player.Status.WAITING;
             if (playedCards.everyonePlayed()) showCards();
         }
 
@@ -159,6 +165,7 @@ public class GameManager {
                 throw new GeneralException(ErrorCodes.GAME_NOT_YOUR_TURN);
             Player winner = playedCards.findPlayerByCard(card);
             if (winner == null) throw new GeneralException(ErrorCodes.NOT_IN_THIS_GAME);
+            winner.score++;
 
             JsonObject obj = Utils.event(Events.GAME_ROUND_ENDED);
             obj.add(Fields.WINNER.toString(), winner.toJson());
@@ -170,6 +177,7 @@ public class GameManager {
 
         private void showCards() {
             game.status = Game.Status.JUDGING;
+            getJudge().status = Player.Status.JUDGING;
             JsonObject obj = Utils.event(Events.GAME_JUDGING);
             JsonArray array = new JsonArray();
             List<List<WhiteCard>> played = new ArrayList<>(playedCards.values());

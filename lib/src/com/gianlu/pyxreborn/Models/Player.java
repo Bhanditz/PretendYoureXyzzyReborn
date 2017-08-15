@@ -10,6 +10,8 @@ import java.util.ArrayList;
 public class Player implements Jsonable {
     public final User user;
     public final Hand hand;
+    public Status status = Status.WAITING;
+    public int score = 0;
 
     public Player(@NotNull User user) {
         this.user = user;
@@ -17,10 +19,38 @@ public class Player implements Jsonable {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Player player = (Player) o;
+        return user.equals(player.user);
+    }
+
+    @Override
     public JsonObject toJson() {
         JsonObject obj = new JsonObject();
         obj.add(Fields.USER.toString(), user.toJson());
+        obj.addProperty(Fields.STATUS.toString(), status.toString());
+        obj.addProperty(Fields.SCORE.toString(), score);
         return obj;
+    }
+
+    public enum Status {
+        WAITING("w"),
+        PLAYING("p"),
+        WAITING_JUDGE("wj"),
+        JUDGING("j");
+
+        private final String val;
+
+        Status(String val) {
+            this.val = val;
+        }
+
+        @Override
+        public String toString() {
+            return val;
+        }
     }
 
     public class Hand extends ArrayList<WhiteCard> {

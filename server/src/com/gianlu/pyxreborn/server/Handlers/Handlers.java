@@ -16,5 +16,6 @@ public class Handlers {
         LIST.put(Operations.START_GAME, StartGameHandler.class);
         LIST.put(Operations.PLAY_CARD, PlayCardHandler.class);
         LIST.put(Operations.JUDGE, JudgeHandler.class);
+        LIST.put(Operations.CHANGE_GAME_OPTIONS, ChangeGameOptionsHandler.class);
     }
 }

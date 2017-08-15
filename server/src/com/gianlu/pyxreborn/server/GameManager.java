@@ -108,6 +108,7 @@ public class GameManager {
         if (game.players.size() < 3) throw new GeneralException(ErrorCodes.GAME_NOT_ENOUGH_PLAYERS);
         loadCards();
 
+        game.status = Game.Status.PLAYING;
         nextRound();
     }
 

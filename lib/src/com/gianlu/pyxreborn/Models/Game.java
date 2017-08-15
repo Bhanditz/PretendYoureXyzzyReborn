@@ -15,6 +15,7 @@ public class Game implements Jsonable {
     public final List<Player> players;
     public final List<User> spectators;
     public Options options;
+    public Status status = Status.LOBBY;
 
     public Game(int gid, User host) {
         this.gid = gid;
@@ -52,6 +53,11 @@ public class Game implements Jsonable {
                 return player;
 
         return null;
+    }
+
+    public enum Status {
+        LOBBY,
+        PLAYING
     }
 
     public static class Options {

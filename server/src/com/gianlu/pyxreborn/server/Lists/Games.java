@@ -154,6 +154,15 @@ public class Games extends ArrayList<Game> {
         game.players.add(new Player(user));
     }
 
+    public void changeGameOptions(@NotNull Game game, JsonObject request) throws GeneralException {
+        if (game.status != Game.Status.LOBBY) throw new GeneralException(ErrorCodes.GAME_ALREADY_STARTED);
+
+        game.options = new Game.Options(
+                request.has(Fields.MAX_PLAYERS.toString()) ? request.get(Fields.MAX_PLAYERS.toString()).getAsInt() : game.options.maxPlayers,
+                request.has(Fields.MAX_SPECTATORS.toString()) ? request.get(Fields.MAX_SPECTATORS.toString()).getAsInt() : game.options.maxSpectators,
+                request.has(Fields.CARD_SET_IDS.toString()) ? Utils.toIntegersList(request.getAsJsonArray(Fields.MAX_PLAYERS.toString())) : game.options.cardSetIds);
+    }
+
     @Nullable
     public Game findGameById(int gid) {
         for (Game game : this)

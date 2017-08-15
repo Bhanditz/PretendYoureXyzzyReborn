@@ -28,7 +28,10 @@ public enum Fields {
     CARD_ID("cid"),
     PLAYED_CARDS("pc"),
     WINNER("W"),
-    WINNER_CARD_ID("wci");
+    WINNER_CARD_ID("wci"),
+    MAX_PLAYERS("mp"),
+    MAX_SPECTATORS("ms"),
+    CARD_SET_IDS("csid");
 
     private final String val;
 

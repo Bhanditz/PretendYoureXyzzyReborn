@@ -11,7 +11,8 @@ public enum Operations {
     JOIN_GAME("jg"),
     START_GAME("sg"),
     PLAY_CARD("pc"),
-    JUDGE("j");
+    JUDGE("j"),
+    CHANGE_GAME_OPTIONS("cgo");
 
     private final String val;
 

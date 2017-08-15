@@ -19,7 +19,8 @@ public enum ErrorCodes {
     NOT_IN_THIS_GAME("nitg"),
     GAME_CARD_NOT_IN_YOUR_HAND("gcniyh"),
     GAME_NOT_YOUR_TURN("gnyt"),
-    GAME_CARD_NOT_PLAYED("gcnp");
+    GAME_CARD_NOT_PLAYED("gcnp"),
+    GAME_ALREADY_STARTED("gas");
 
     private final String val;
 

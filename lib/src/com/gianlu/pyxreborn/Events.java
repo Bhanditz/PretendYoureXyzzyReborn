@@ -5,9 +5,11 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Objects;
 
 public enum Events {
+    CHAT("c"),
     NEW_USER("nu"),
     USER_LEFT("ul"),
     NEW_GAME("ng"),
+    GAME_CHAT("gc"),
     GAME_NEW_PLAYER("gnp"),
     GAME_PLAYER_LEFT("gpl"),
     GAME_REMOVED("gr"),

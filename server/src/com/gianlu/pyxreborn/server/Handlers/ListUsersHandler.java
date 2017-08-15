@@ -8,9 +8,9 @@ import com.gianlu.pyxreborn.server.Server;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
-public class GetUsersListHandler extends BaseHandler {
-    public GetUsersListHandler() {
-        super(Operations.GET_USERS_LIST);
+public class ListUsersHandler extends BaseHandler {
+    public ListUsersHandler() {
+        super(Operations.LIST_USERS);
     }
 
     @Override

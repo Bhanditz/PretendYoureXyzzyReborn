@@ -8,9 +8,9 @@ import com.gianlu.pyxreborn.server.Server;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
-public class GetGamesListHandler extends BaseHandler {
-    public GetGamesListHandler() {
-        super(Operations.GET_GAMES_LIST);
+public class ListGamesHandler extends BaseHandler {
+    public ListGamesHandler() {
+        super(Operations.LIST_GAMES);
     }
 
     @Override

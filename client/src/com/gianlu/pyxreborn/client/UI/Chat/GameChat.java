@@ -41,7 +41,7 @@ public class GameChat extends BaseChatController {
         try {
             client.sendMessageBlocking(req);
         } catch (InterruptedException | PyxException ex) {
-            notifyException(ex);
+            UIClient.notifyException(ex);
             return;
         }
 

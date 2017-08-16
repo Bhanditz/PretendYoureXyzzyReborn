@@ -27,4 +27,10 @@ To start the client in command-line mode use the --console argument:
 To play the game you would likely start the client in GUI mode. To do that you can execute the JAR like so:
 
     java -jar pyx-client.jar
+    
+Once the client is started you'll be prompted to input a server address and a nickname. The server address will be something like this:
+
+    ws://localhost:9696/
+    
+**Note the ws://, that's important as we are communicating over Websockets!**
 

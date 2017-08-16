@@ -8,11 +8,14 @@ import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 
 public class Register {
     private final Stage stage;
     @FXML
     private TextField nickname;
+    @FXML
+    private TextField address;
 
     public Register(Stage stage) {
         this.stage = stage;
@@ -22,8 +25,8 @@ public class Register {
     public void register() {
         String nickname = this.nickname.getText();
 
-        Client client = new Client(URI.create("ws://localhost:6969"), nickname, null);
         try {
+            Client client = new Client(new URI(address.getText()), nickname, null);
             if (client.connectBlocking()) {
                 stage.close();
                 UIClient.loadScene(null, nickname + " - Pretend You're Xyzzy Reborn", "Main.fxml", new Main(client));
@@ -31,8 +34,8 @@ public class Register {
             } else {
                 new Alert(Alert.AlertType.ERROR, "Failed connecting!").show();
             }
-        } catch (InterruptedException ex) {
-            throw new RuntimeException(ex);
+        } catch (InterruptedException | URISyntaxException ex) {
+            UIClient.notifyException(ex);
         }
     }
 }

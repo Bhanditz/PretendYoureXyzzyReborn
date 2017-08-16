@@ -39,7 +39,7 @@ public class Main {
         try {
             resp = client.sendMessageBlocking(client.createRequest(Operations.LIST_GAMES));
         } catch (InterruptedException | PyxException ex) {
-            notifyException(ex);
+            UIClient.notifyException(ex);
             return;
         }
 
@@ -62,7 +62,7 @@ public class Main {
         try {
             resp = client.sendMessageBlocking(client.createRequest(Operations.LIST_USERS));
         } catch (InterruptedException | PyxException ex) {
-            notifyException(ex);
+            UIClient.notifyException(ex);
             return;
         }
 
@@ -77,17 +77,13 @@ public class Main {
         usersList.setItems(users);
     }
 
-    private void notifyException(Throwable ex) {
-        new Alert(Alert.AlertType.ERROR, ex.getMessage()).show();
-    }
-
     @FXML
     public void createGame(MouseEvent mouseEvent) {
         JsonObject resp;
         try {
             resp = client.sendMessageBlocking(client.createRequest(Operations.CREATE_GAME));
         } catch (InterruptedException | PyxException ex) {
-            notifyException(ex);
+            UIClient.notifyException(ex);
             return;
         }
 

@@ -8,7 +8,6 @@ import com.sun.javafx.collections.ObservableListWrapper;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
@@ -37,10 +36,6 @@ public abstract class BaseChatController {
     }
 
     protected abstract boolean acceptEvent(Events event, JsonObject request);
-
-    protected final void notifyException(Throwable ex) {
-        new Alert(Alert.AlertType.ERROR, ex.getMessage()).show();
-    }
 
     @FXML
     protected abstract void send(MouseEvent event);

@@ -53,6 +53,8 @@ public class ConnectedUsers extends ArrayList<User> {
             }
         }
 
+        if (nickname.isEmpty() || nickname.length() < 5) throw new GeneralException(ErrorCodes.INVALID_NICKNAME);
+
         User user = new User(nickname, null, address);
 
         JsonObject obj = Utils.event(Events.NEW_USER);

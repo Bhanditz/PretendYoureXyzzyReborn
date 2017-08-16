@@ -25,7 +25,8 @@ public enum ErrorCodes {
     GAME_NOT_YOUR_TURN("gnyt"),
     GAME_CARD_NOT_PLAYED("gcnp"),
     GAME_ALREADY_STARTED("gas"),
-    INVALID_CARD_SET_ID("icsid");
+    INVALID_CARD_SET_ID("icsid"),
+    INVALID_NICKNAME("in");
 
     private final String val;
 

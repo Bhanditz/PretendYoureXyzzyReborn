@@ -17,15 +17,18 @@ import javafx.scene.input.MouseEvent;
 import java.util.ArrayList;
 
 public class Main {
-    public ListView<String> gamesList;
-    public ListView<String> usersList;
-    private Client client;
+    private final Client client;
+    @FXML
+    private ListView<String> gamesList;
+    @FXML
+    private ListView<String> usersList;
 
-    public void setClient(Client client) {
+    public Main(Client client) {
         this.client = client;
     }
 
-    public void refreshEverything() {
+    @FXML
+    public void initialize() {
         refreshGamesList();
         refreshUsersList();
     }

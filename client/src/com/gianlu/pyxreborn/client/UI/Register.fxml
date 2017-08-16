@@ -6,8 +6,7 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
-<GridPane xmlns:fx="http://javafx.com/fxml/1" prefHeight="200.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/8"
-          fx:controller="com.gianlu.pyxreborn.client.UI.Register">
+<GridPane xmlns:fx="http://javafx.com/fxml/1" prefHeight="200.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/8">
     <columnConstraints>
         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="20.0" prefWidth="100.0"/>
         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>

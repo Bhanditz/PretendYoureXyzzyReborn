@@ -6,30 +6,25 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 
 public class StartupUI extends Application {
-    private static Stage stage;
-
     public static void main(String[] args) {
         launch(args);
     }
 
-    @NotNull
-    public static Stage getStage() {
-        if (stage == null) throw new IllegalStateException("Application not yet started!");
-        return stage;
-    }
-
-    public static <T> T loadScene(Stage stage, String title, String layout) {
-        FXMLLoader loader = new FXMLLoader(StartupUI.class.getResource(layout));
+    public static <T> void loadScene(@Nullable Stage stage, String title, String layout, @NotNull T controller) {
+        FXMLLoader loader = new FXMLLoader(controller.getClass().getResource(layout));
+        loader.setController(controller);
 
         try {
             Parent root = loader.load();
+            if (stage == null) stage = new Stage();
             stage.setTitle(title);
             stage.setScene(new Scene(root));
-            return loader.getController();
+            stage.show();
         } catch (IOException ex) {
             throw new RuntimeException(ex);
         }
@@ -37,8 +32,6 @@ public class StartupUI extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        StartupUI.stage = stage;
-        loadScene(stage, "Register", "Register.fxml");
-        stage.show();
+        loadScene(stage, "Register - Pretend You're Xyzzy Reborn", "Register.fxml", new Register(stage));
     }
 }

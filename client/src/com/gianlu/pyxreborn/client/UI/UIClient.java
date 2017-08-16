@@ -1,6 +1,5 @@
 package com.gianlu.pyxreborn.client.UI;
 
-import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -10,11 +9,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 
-public class StartupUI extends Application {
-    public static void main(String[] args) {
-        launch(args);
-    }
-
+public class UIClient {
     public static <T> void loadScene(@Nullable Stage stage, String title, String layout, @NotNull T controller) {
         FXMLLoader loader = new FXMLLoader(controller.getClass().getResource(layout));
         loader.setController(controller);
@@ -28,10 +23,5 @@ public class StartupUI extends Application {
         } catch (IOException ex) {
             throw new RuntimeException(ex);
         }
-    }
-
-    @Override
-    public void start(Stage stage) throws Exception {
-        loadScene(stage, "Register - Pretend You're Xyzzy Reborn", "Register.fxml", new Register(stage));
     }
 }

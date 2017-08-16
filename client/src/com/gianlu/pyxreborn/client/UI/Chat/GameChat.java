@@ -5,7 +5,7 @@ import com.gianlu.pyxreborn.Exceptions.PyxException;
 import com.gianlu.pyxreborn.Fields;
 import com.gianlu.pyxreborn.Operations;
 import com.gianlu.pyxreborn.client.Client;
-import com.gianlu.pyxreborn.client.UI.StartupUI;
+import com.gianlu.pyxreborn.client.UI.UIClient;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import javafx.scene.input.MouseEvent;
@@ -19,7 +19,7 @@ public class GameChat extends BaseChatController {
     }
 
     public static void show(Client client, String gameName, int gameId) {
-        StartupUI.loadScene(null, gameName + " chat - Pretend You're Xyzzy Reborn", "Chat.fxml", new GameChat(client, gameId));
+        UIClient.loadScene(null, gameName + " chat - Pretend You're Xyzzy Reborn", "Chat.fxml", new GameChat(client, gameId));
     }
 
     @Override

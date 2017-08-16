@@ -26,7 +26,7 @@ public class Register {
         try {
             if (client.connectBlocking()) {
                 stage.close();
-                StartupUI.loadScene(null, nickname + " - Pretend You're Xyzzy Reborn", "Main.fxml", new Main(client));
+                UIClient.loadScene(null, nickname + " - Pretend You're Xyzzy Reborn", "Main.fxml", new Main(client));
                 GlobalChat.show(client);
             } else {
                 new Alert(Alert.AlertType.ERROR, "Failed connecting!").show();

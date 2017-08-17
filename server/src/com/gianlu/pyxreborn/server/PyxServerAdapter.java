@@ -6,6 +6,7 @@ import com.gianlu.pyxreborn.Fields;
 import com.gianlu.pyxreborn.Models.Game;
 import com.gianlu.pyxreborn.Models.Player;
 import com.gianlu.pyxreborn.Models.User;
+import com.gianlu.pyxreborn.Utils;
 import com.gianlu.pyxreborn.server.Lists.CardSets;
 import com.gianlu.pyxreborn.server.Lists.ConnectedUsers;
 import com.gianlu.pyxreborn.server.Lists.Games;
@@ -23,15 +24,19 @@ import org.jetbrains.annotations.Nullable;
 
 import java.net.InetSocketAddress;
 import java.util.Objects;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.logging.Logger;
 
 public abstract class PyxServerAdapter extends WebSocketServer {
     private final static Logger LOGGER = Logger.getLogger(Server.class.getName());
+    private final static int ADMIN_CODE_REFRESH_RATE = 60; // sec
     public final ConnectedUsers users;
     public final Games games;
     public final Config config;
     public final CardSets cardSets;
     private final JsonParser parser;
+    private String currentAdminCode;
 
     public PyxServerAdapter(Config config, CardSets cardSets) {
         super(new InetSocketAddress(config.serverPort));
@@ -40,6 +45,18 @@ public abstract class PyxServerAdapter extends WebSocketServer {
         this.cardSets = cardSets;
         this.games = new Games(this);
         this.parser = new JsonParser();
+
+        new Timer().scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                refreshAdminCode();
+            }
+        }, 0, ADMIN_CODE_REFRESH_RATE * 1000);
+    }
+
+    private void refreshAdminCode() {
+        currentAdminCode = Utils.generateAlphanumericString(24);
+        LOGGER.config("Current admin code: " + currentAdminCode);
     }
 
     @Override
@@ -51,8 +68,18 @@ public abstract class PyxServerAdapter extends WebSocketServer {
     public ServerHandshakeBuilder onWebsocketHandshakeReceivedAsServer(WebSocket conn, Draft draft, ClientHandshake request) throws InvalidDataException {
         ServerHandshakeBuilder builder = super.onWebsocketHandshakeReceivedAsServer(conn, draft, request);
         if (request.hasFieldValue(Fields.NICKNAME.toString())) {
+            boolean admin = false;
+            if (request.hasFieldValue(Fields.ADMIN.toString())) {
+                String code = request.getFieldValue(Fields.ADMIN.toString());
+                if (Objects.equals(code, currentAdminCode)) {
+                    admin = true;
+                } else {
+                    throw new InvalidDataException(CloseFrame.POLICY_VALIDATION, ErrorCodes.INVALID_ADMIN_CODE.toString());
+                }
+            }
+
             try {
-                User user = users.checkAndAdd(request.getFieldValue(Fields.NICKNAME.toString()), request.getFieldValue(Fields.SESSION_ID.toString()), conn.getRemoteSocketAddress());
+                User user = users.checkAndAdd(request.getFieldValue(Fields.NICKNAME.toString()), request.getFieldValue(Fields.SESSION_ID.toString()), conn.getRemoteSocketAddress(), admin);
                 builder.put(Fields.SESSION_ID.toString(), user.sessionId);
             } catch (GeneralException ex) {
                 throw new InvalidDataException(CloseFrame.POLICY_VALIDATION, ex.code.toString());
@@ -108,6 +135,15 @@ public abstract class PyxServerAdapter extends WebSocketServer {
     public void onError(WebSocket conn, Exception ex) {
         LOGGER.severe(ex.getMessage());
         ex.printStackTrace();
+    }
+
+    @Nullable
+    public WebSocket findWebSocketByAddress(InetSocketAddress address) {
+        for (WebSocket socket : connections())
+            if (Objects.equals(socket.getRemoteSocketAddress(), address))
+                return socket;
+
+        return null;
     }
 
     @Override

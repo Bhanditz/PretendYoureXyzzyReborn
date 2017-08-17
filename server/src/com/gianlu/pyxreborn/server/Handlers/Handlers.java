@@ -22,5 +22,6 @@ public class Handlers {
         LIST.put(Operations.CHAT, ChatHandler.class);
         LIST.put(Operations.GAME_CHAT, GameChatHandler.class);
         LIST.put(Operations.GET_GAME, GetGameHandler.class);
+        LIST.put(Operations.KICK, KickUserHandler.class);
     }
 }

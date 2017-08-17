@@ -2,11 +2,13 @@ package com.gianlu.pyxreborn;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class Utils {
     public static final String ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -17,6 +19,18 @@ public class Utils {
         ex.printStackTrace(writer);
         writer.close();
         return string.toString();
+    }
+
+    @NotNull
+    public static String generateAlphanumericString(int length) {
+        Random random = new Random();
+        StringBuilder builder = new StringBuilder(length);
+        for (int i = 0; i <= length - 1; i++) {
+            if (random.nextBoolean()) builder.append(String.valueOf(random.nextInt(10)));
+            else builder.append(Utils.ALPHABET.charAt(random.nextInt(Utils.ALPHABET.length())));
+        }
+
+        return builder.toString();
     }
 
     public static JsonObject event(Events event) {

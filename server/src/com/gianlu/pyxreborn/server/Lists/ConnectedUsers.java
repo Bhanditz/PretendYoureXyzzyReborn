@@ -1,40 +1,62 @@
 package com.gianlu.pyxreborn.server.Lists;
 
+import com.gianlu.pyxreborn.Annotations.AdminOnly;
 import com.gianlu.pyxreborn.Events;
 import com.gianlu.pyxreborn.Exceptions.ErrorCodes;
 import com.gianlu.pyxreborn.Exceptions.GeneralException;
 import com.gianlu.pyxreborn.Fields;
+import com.gianlu.pyxreborn.KickReason;
 import com.gianlu.pyxreborn.Models.Game;
+import com.gianlu.pyxreborn.Models.Player;
 import com.gianlu.pyxreborn.Models.User;
 import com.gianlu.pyxreborn.Utils;
 import com.gianlu.pyxreborn.server.PyxServerAdapter;
 import com.google.gson.JsonObject;
+import org.java_websocket.WebSocket;
+import org.java_websocket.framing.CloseFrame;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.net.InetSocketAddress;
-import java.util.ArrayList;
-import java.util.Objects;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 
 public class ConnectedUsers extends ArrayList<User> {
     private static final int GENERAL_TASKS_PERIOD = 10; // sec
     private final PyxServerAdapter server;
     private final int maxUsers;
     private final int reconnectDelay;
-    private final GeneralTasks tasks;
 
     public ConnectedUsers(PyxServerAdapter server) {
         this.server = server;
         this.maxUsers = server.config.maxUsers;
         this.reconnectDelay = server.config.reconnectDelay * 1000;
-        this.tasks = new GeneralTasks();
-        new Timer().scheduleAtFixedRate(tasks, 0, GENERAL_TASKS_PERIOD * 1000);
+        new Timer().scheduleAtFixedRate(new GeneralTasks(), 0, GENERAL_TASKS_PERIOD * 1000);
     }
 
-    public User checkAndAdd(String nickname, @Nullable String sid, InetSocketAddress address) throws GeneralException {
-        if (size() >= maxUsers) throw new GeneralException(ErrorCodes.TOO_MANY_USERS);
+    @AdminOnly
+    public void kickUser(@NotNull User user, @Nullable KickReason reason) {
+        Game playingIn = server.games.playingIn(user);
+        if (playingIn != null) {
+            Player player = playingIn.findPlayerByNickname(user.nickname);
+            if (player != null) server.games.kickPlayer(playingIn, player, reason);
+        }
+
+        WebSocket socket = server.findWebSocketByAddress(user.address);
+        if (socket == null) return;
+        socket.close(CloseFrame.POLICY_VALIDATION, (reason == null ? KickReason.GENERAL_KICK : reason).toString());
+    }
+
+    /**
+     * @param admin if true the user must connect at every cost, even by kicking other players
+     */
+    public User checkAndAdd(String nickname, @Nullable String sid, InetSocketAddress address, boolean admin) throws GeneralException {
+        if (size() >= maxUsers) {
+            if (admin) kickUser(get(new Random().nextInt(size())), KickReason.ADMIN_LOGGED);
+            else throw new GeneralException(ErrorCodes.TOO_MANY_USERS);
+        }
+
         User alreadyConnectedUser = findByNickname(nickname);
+        if (admin && alreadyConnectedUser != null) kickUser(alreadyConnectedUser, KickReason.ADMIN_LOGGED);
         if (alreadyConnectedUser != null) {
             if (alreadyConnectedUser.isDisconnected()) {
                 if (Objects.equals(alreadyConnectedUser.sessionId, sid)) {
@@ -53,9 +75,10 @@ public class ConnectedUsers extends ArrayList<User> {
             }
         }
 
-        if (nickname.isEmpty() || nickname.length() < 5) throw new GeneralException(ErrorCodes.INVALID_NICKNAME);
+        if (nickname.isEmpty() || nickname.length() < 5 || (!admin && nickname.equals("xyzzy")))
+            throw new GeneralException(ErrorCodes.INVALID_NICKNAME);
 
-        User user = new User(nickname, null, address);
+        User user = new User(nickname, null, address, admin);
 
         JsonObject obj = Utils.event(Events.NEW_USER);
         obj.addProperty(Fields.NICKNAME.toString(), nickname);

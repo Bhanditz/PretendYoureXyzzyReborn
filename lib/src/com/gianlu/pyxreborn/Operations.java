@@ -17,7 +17,8 @@ public enum Operations {
     LIST_CARD_SETS("lcs"),
     CHAT("c"),
     GAME_CHAT("gc"),
-    GET_GAME("gg");
+    GET_GAME("gg"),
+    KICK("k");
 
     private final String val;
 

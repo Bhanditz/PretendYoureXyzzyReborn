@@ -41,7 +41,9 @@ public enum Fields {
     GAME("g"),
     STATUS("s"),
     SCORE("S"),
-    SPECTATORS("ss");
+    SPECTATORS("ss"),
+    ADMIN("a"),
+    KICK_REASON("kr");
 
     private final String val;
 

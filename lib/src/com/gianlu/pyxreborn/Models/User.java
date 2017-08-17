@@ -3,39 +3,27 @@ package com.gianlu.pyxreborn.Models;
 import com.gianlu.pyxreborn.Fields;
 import com.gianlu.pyxreborn.Utils;
 import com.google.gson.JsonObject;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.net.InetSocketAddress;
-import java.util.Random;
 
 public class User implements Jsonable {
     public final String nickname;
     public final InetSocketAddress address;
     public final String sessionId;
+    public final boolean isAdmin;
     public long disconnectedAt = -1;
 
-    public User(String nickname, @Nullable String sessionId, InetSocketAddress address) {
+    public User(String nickname, @Nullable String sessionId, InetSocketAddress address, boolean isAdmin) {
         this.nickname = nickname;
         this.address = address;
-        if (sessionId == null) this.sessionId = generateNewSessionId();
+        this.isAdmin = isAdmin;
+        if (sessionId == null) this.sessionId = Utils.generateAlphanumericString(16);
         else this.sessionId = sessionId;
     }
 
     public boolean isDisconnected() {
         return disconnectedAt != -1;
-    }
-
-    @NotNull
-    private String generateNewSessionId() {
-        Random random = new Random();
-        StringBuilder builder = new StringBuilder(16);
-        for (int i = 0; i <= 15; i++) {
-            if (random.nextBoolean()) builder.append(String.valueOf(random.nextInt(10)));
-            else builder.append(Utils.ALPHABET.charAt(random.nextInt(Utils.ALPHABET.length())));
-        }
-
-        return builder.toString();
     }
 
     @Override

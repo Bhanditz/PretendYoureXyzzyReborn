@@ -12,8 +12,8 @@ import java.util.Map;
 public class Client extends PyxClientAdapter {
     private final Map<EventInterceptor, IEventListener> eventListener = new HashMap<>();
 
-    public Client(URI serverUri, String nickname, @Nullable String sid) {
-        super(serverUri, nickname, sid);
+    public Client(URI serverUri, String nickname, @Nullable String sid, @Nullable String adminCode) {
+        super(serverUri, nickname, sid, adminCode);
     }
 
     @Override

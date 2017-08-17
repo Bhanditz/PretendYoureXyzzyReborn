@@ -65,14 +65,23 @@ public class ConsoleClient {
                         .text("SID (empty if you're not reconnecting):")
                         .defaultValue("")
                         .required(false)
+                        .build(),
+                new InputPrompt.Builder()
+                        .name(Fields.ADMIN_CODE.toString())
+                        .text("Admin code (empty if you're not an admin):")
+                        .defaultValue("")
+                        .required(false)
                         .build());
 
         Logger.setEnabled(((ConfirmationAnswer) result.get(0)).isConfirmed());
 
         String sid = ((InputAnswer) result.get(3)).getAnswer();
+        String adminCode = ((InputAnswer) result.get(4)).getAnswer();
+
         client = new Client(URI.create(((InputAnswer) result.get(1)).getAnswer()),
                 ((InputAnswer) result.get(2)).getAnswer(),
-                sid.isEmpty() ? null : sid);
+                sid.isEmpty() ? null : sid,
+                adminCode.isEmpty() ? null : adminCode);
 
         if (client.connectBlocking()) {
             mainMenu();

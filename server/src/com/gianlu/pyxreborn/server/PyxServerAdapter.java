@@ -56,7 +56,7 @@ public abstract class PyxServerAdapter extends WebSocketServer {
 
     private void refreshAdminCode() {
         currentAdminCode = Utils.generateAlphanumericString(24);
-        LOGGER.config("Current admin code: " + currentAdminCode);
+        LOGGER.info("Current admin code: " + currentAdminCode);
     }
 
     @Override
@@ -69,8 +69,8 @@ public abstract class PyxServerAdapter extends WebSocketServer {
         ServerHandshakeBuilder builder = super.onWebsocketHandshakeReceivedAsServer(conn, draft, request);
         if (request.hasFieldValue(Fields.NICKNAME.toString())) {
             boolean admin = false;
-            if (request.hasFieldValue(Fields.ADMIN.toString())) {
-                String code = request.getFieldValue(Fields.ADMIN.toString());
+            if (request.hasFieldValue(Fields.ADMIN_CODE.toString())) {
+                String code = request.getFieldValue(Fields.ADMIN_CODE.toString());
                 if (Objects.equals(code, currentAdminCode)) {
                     admin = true;
                 } else {

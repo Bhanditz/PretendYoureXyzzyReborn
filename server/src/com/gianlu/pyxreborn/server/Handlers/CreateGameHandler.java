@@ -17,7 +17,7 @@ public class CreateGameHandler extends BaseHandlerWithUser {
     @Override
     public JsonObject handleRequest(Server server, @NotNull User user, JsonObject request, JsonObject response) throws GeneralException {
         Game game = server.games.createAndAdd(user);
-        response.addProperty(Fields.GID.toString(), game.gid);
+        response.add(Fields.GAME.toString(), game.toJson());
         return response;
     }
 }

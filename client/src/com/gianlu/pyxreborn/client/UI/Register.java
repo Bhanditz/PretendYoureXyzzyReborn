@@ -5,7 +5,9 @@ import com.gianlu.pyxreborn.client.UI.Chat.GlobalChat;
 import com.gianlu.pyxreborn.client.UI.Main.Main;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 
 import java.net.URI;
@@ -17,9 +19,19 @@ public class Register {
     private TextField nickname;
     @FXML
     private TextField address;
+    @FXML
+    private TextField adminCode;
+    @FXML
+    private CheckBox admin;
 
     public Register(Stage stage) {
         this.stage = stage;
+    }
+
+    @FXML
+    public void adminCheckedChanged(MouseEvent event) {
+        if (admin.isSelected()) adminCode.setOpacity(1);
+        else adminCode.setOpacity(0);
     }
 
     @FXML
@@ -27,7 +39,7 @@ public class Register {
         String nickname = this.nickname.getText();
 
         try {
-            Client client = new Client(new URI(address.getText()), nickname, null);
+            Client client = new Client(new URI(address.getText()), nickname, null, admin.isSelected() ? adminCode.getText() : null);
             if (client.connectBlocking()) {
                 stage.close();
                 GlobalChat.show(client);

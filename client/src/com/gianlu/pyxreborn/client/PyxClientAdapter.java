@@ -32,9 +32,10 @@ public abstract class PyxClientAdapter extends WebSocketClient {
      * @param serverUri the server uri
      * @param nickname  the user's nickname
      * @param sid       if the user has disconnected recently, it can reconnect specifying the assigned SID and the same nickname
+     * @param adminCode needed to login as an admin
      */
-    public PyxClientAdapter(URI serverUri, String nickname, @Nullable String sid) {
-        super(serverUri, new CustomDraft(nickname, sid));
+    public PyxClientAdapter(URI serverUri, String nickname, @Nullable String sid, @Nullable String adminCode) {
+        super(serverUri, new CustomDraft(nickname, sid, adminCode));
         requests = new ConcurrentHashMap<>();
         parser = new JsonParser();
     }
@@ -143,21 +144,24 @@ public abstract class PyxClientAdapter extends WebSocketClient {
     private static class CustomDraft extends Draft_6455 {
         private final String nickname;
         private final String sid;
+        private final String adminCode;
 
-        public CustomDraft(String nickname, @Nullable String sid) {
+        public CustomDraft(String nickname, @Nullable String sid, String adminCode) {
             this.nickname = nickname;
             this.sid = sid;
+            this.adminCode = adminCode;
         }
 
         @Override
         public Draft copyInstance() {
-            return new CustomDraft(nickname, sid);
+            return new CustomDraft(nickname, sid, adminCode);
         }
 
         @Override
         public ClientHandshakeBuilder postProcessHandshakeRequestAsClient(ClientHandshakeBuilder request) {
             request.put(Fields.NICKNAME.toString(), nickname);
             if (sid != null) request.put(Fields.SESSION_ID.toString(), sid);
+            if (adminCode != null) request.put(Fields.ADMIN_CODE.toString(), adminCode);
             return super.postProcessHandshakeRequestAsClient(request);
         }
     }

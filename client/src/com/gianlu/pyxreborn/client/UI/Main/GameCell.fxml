@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+<VBox xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8">
+    <children>
+        <HBox alignment="CENTER_LEFT" VBox.vgrow="NEVER">
+            <children>
+                <Label fx:id="name" text="{Game name}" HBox.hgrow="ALWAYS">
+                    <HBox.margin>
+                        <Insets right="10.0"/>
+                    </HBox.margin>
+                    <font>
+                        <Font name="System Bold" size="12.0"/>
+                    </font>
+                </Label>
+                <Button alignment="CENTER_RIGHT" mnemonicParsing="false" onMouseClicked="#join" text="Join">
+                    <HBox.margin>
+                        <Insets right="10.0"/>
+                    </HBox.margin>
+                </Button>
+                <Button fx:id="spectate" alignment="CENTER_RIGHT" mnemonicParsing="false" onMouseClicked="#spectate"
+                        text="Spectate"/>
+            </children>
+            <VBox.margin>
+                <Insets/>
+            </VBox.margin>
+            <padding>
+                <Insets bottom="5.0"/>
+            </padding>
+        </HBox>
+        <Label fx:id="players" text="{Players number}"/>
+        <Label fx:id="spectators" text="{Spectators number}"/>
+    </children>
+    <padding>
+        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+    </padding>
+</VBox>

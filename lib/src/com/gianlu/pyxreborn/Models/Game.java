@@ -37,6 +37,10 @@ public class Game implements Jsonable {
         for (Player player : this.players) players.add(player.toJson());
         obj.add(Fields.PLAYERS.toString(), players);
 
+        JsonArray spectators = new JsonArray();
+        for (User spectator : this.spectators) spectators.add(spectator.toJson());
+        obj.add(Fields.SPECTATORS.toString(), spectators);
+
         return obj;
     }
 

@@ -2,6 +2,7 @@ package com.gianlu.pyxreborn.client.UI;
 
 import com.gianlu.pyxreborn.client.Client;
 import com.gianlu.pyxreborn.client.UI.Chat.GlobalChat;
+import com.gianlu.pyxreborn.client.UI.Main.Main;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
@@ -29,8 +30,8 @@ public class Register {
             Client client = new Client(new URI(address.getText()), nickname, null);
             if (client.connectBlocking()) {
                 stage.close();
-                UIClient.loadScene(null, nickname + " - Pretend You're Xyzzy Reborn", "Main.fxml", new Main(client));
                 GlobalChat.show(client);
+                Main.show(client, nickname);
             } else {
                 new Alert(Alert.AlertType.ERROR, "Failed connecting!").show();
             }

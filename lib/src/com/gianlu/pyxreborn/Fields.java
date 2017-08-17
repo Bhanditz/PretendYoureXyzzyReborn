@@ -40,7 +40,8 @@ public enum Fields {
     OPTIONS("o"),
     GAME("g"),
     STATUS("s"),
-    SCORE("S");
+    SCORE("S"),
+    SPECTATORS("ss");
 
     private final String val;
 

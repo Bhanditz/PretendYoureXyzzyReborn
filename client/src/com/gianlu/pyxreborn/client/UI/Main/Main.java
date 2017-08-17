@@ -1,9 +1,12 @@
-package com.gianlu.pyxreborn.client.UI;
+package com.gianlu.pyxreborn.client.UI.Main;
 
 import com.gianlu.pyxreborn.Exceptions.PyxException;
 import com.gianlu.pyxreborn.Fields;
 import com.gianlu.pyxreborn.Operations;
 import com.gianlu.pyxreborn.client.Client;
+import com.gianlu.pyxreborn.client.UI.Chat.GameChat;
+import com.gianlu.pyxreborn.client.UI.Game;
+import com.gianlu.pyxreborn.client.UI.UIClient;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -13,22 +16,31 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ListView;
 import javafx.scene.input.MouseEvent;
+import javafx.stage.Stage;
 
 import java.util.ArrayList;
 
 public class Main {
+    private final Stage stage;
     private final Client client;
     @FXML
-    private ListView<String> gamesList;
+    private ListView<JsonObject> gamesList;
     @FXML
     private ListView<String> usersList;
 
-    public Main(Client client) {
+    public Main(Stage stage, Client client) {
+        this.stage = stage;
         this.client = client;
+    }
+
+    public static void show(Client client, String nickname) {
+        Stage stage = new Stage();
+        UIClient.loadScene(stage, nickname + " - Pretend You're Xyzzy Reborn", "Main.fxml", new Main(stage, client));
     }
 
     @FXML
     public void initialize() {
+        gamesList.setCellFactory(param -> new GameCell(stage, client));
         refreshGamesList();
         refreshUsersList();
     }
@@ -44,15 +56,8 @@ public class Main {
         }
 
         JsonArray gamesArray = resp.getAsJsonArray(Fields.GAMES_LIST.toString());
-        ObservableList<String> games = new ObservableListWrapper<>(new ArrayList<String>());
-
-        for (JsonElement element : gamesArray) {
-            JsonObject game = element.getAsJsonObject();
-            String host = game.get(Fields.HOST.toString()).getAsJsonObject().get(Fields.NICKNAME.toString()).getAsString();
-            int gid = game.get(Fields.GID.toString()).getAsInt();
-            games.add(host + " (" + gid + ")");
-        }
-
+        ObservableList<JsonObject> games = new ObservableListWrapper<>(new ArrayList<JsonObject>());
+        for (JsonElement element : gamesArray) games.add(element.getAsJsonObject());
         gamesList.setItems(games);
     }
 
@@ -87,7 +92,12 @@ public class Main {
             return;
         }
 
-        new Alert(Alert.AlertType.INFORMATION, "New game ID: " + resp.get(Fields.GID.toString()).getAsInt()).show();
-        refreshGamesList();
+        String gameName = resp.get(Fields.HOST.toString()).getAsJsonObject().get(Fields.NICKNAME.toString()).getAsString();
+        int gid = resp.get(Fields.GID.toString()).getAsInt();
+
+        new Alert(Alert.AlertType.INFORMATION, "New game ID: " + gid).show();
+        GameChat.show(client, gameName, gid);
+        Game.show(client, gameName);
+        stage.close();
     }
 }

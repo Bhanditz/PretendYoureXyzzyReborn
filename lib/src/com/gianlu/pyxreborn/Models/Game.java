@@ -4,6 +4,8 @@ import com.gianlu.pyxreborn.Fields;
 import com.gianlu.pyxreborn.Utils;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.sun.javafx.collections.ObservableListWrapper;
+import javafx.collections.ObservableList;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -12,17 +14,17 @@ import java.util.Objects;
 
 public class Game implements Jsonable {
     public final int gid;
-    public final User host;
-    public final List<Player> players;
-    public final List<User> spectators;
+    public final ObservableList<Player> players;
+    public final ObservableList<User> spectators;
+    public User host;
     public Options options;
     public Status status = Status.LOBBY;
 
     public Game(int gid, User host) {
         this.gid = gid;
         this.host = host;
-        this.players = new ArrayList<>();
-        this.spectators = new ArrayList<>();
+        this.players = new ObservableListWrapper<>(new ArrayList<>());
+        this.spectators = new ObservableListWrapper<>(new ArrayList<>());
         this.options = Options.DEFAULT;
     }
 
@@ -30,6 +32,7 @@ public class Game implements Jsonable {
     public JsonObject toJson() {
         JsonObject obj = new JsonObject();
         obj.addProperty(Fields.GID.toString(), gid);
+        obj.addProperty(Fields.STATUS.toString(), status.val);
         obj.add(Fields.HOST.toString(), host.toJson());
         obj.add(Fields.OPTIONS.toString(), options.toJson());
 
@@ -70,6 +73,14 @@ public class Game implements Jsonable {
 
         Status(String val) {
             this.val = val;
+        }
+
+        public static Status parse(String val) {
+            for (Status status : values())
+                if (Objects.equals(status.val, val))
+                    return status;
+
+            return null;
         }
 
         @Override

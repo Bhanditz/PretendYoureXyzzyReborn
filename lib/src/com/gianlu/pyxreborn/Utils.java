@@ -1,6 +1,7 @@
 package com.gianlu.pyxreborn;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.jetbrains.annotations.NotNull;
 
@@ -37,6 +38,12 @@ public class Utils {
         JsonObject obj = new JsonObject();
         obj.addProperty(Fields.EVENT.toString(), event.toString());
         return obj;
+    }
+
+    public static List<JsonObject> toJsonObjectsList(JsonArray array) {
+        List<JsonObject> objs = new ArrayList<>();
+        for (JsonElement element : array) objs.add(element.getAsJsonObject());
+        return objs;
     }
 
     public static JsonArray toJsonArray(List<?> items) {

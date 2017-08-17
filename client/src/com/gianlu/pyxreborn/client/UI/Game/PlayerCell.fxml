@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<VBox xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8">
+    <children>
+        <Label fx:id="name" text="{Player name}">
+            <font>
+                <Font name="System Bold" size="14.0"/>
+            </font>
+            <VBox.margin>
+                <Insets bottom="2.0"/>
+            </VBox.margin>
+        </Label>
+        <Label fx:id="score" text="{Player score}"/>
+        <Label fx:id="status" text="{Player status}"/>
+    </children>
+    <padding>
+        <Insets bottom="2.0" left="2.0" right="2.0" top="2.0"/>
+    </padding>
+</VBox>

@@ -79,6 +79,9 @@ public class Games extends ArrayList<Game> {
                 server.broadcastMessageToPlayers(game, obj);  // Don't broadcast this to the player itself
 
                 game.players.remove(player);
+                if (user == game.host && !game.players.isEmpty())
+                    game.host = game.players.get(0).user;
+
                 killGameIfEmpty(game);
             }
         }
@@ -113,6 +116,10 @@ public class Games extends ArrayList<Game> {
         remove(game);
 
         server.broadcastMessage(Utils.event(Events.GAME_REMOVED));
+    }
+
+    public interface GameObserver {
+        void onPlayerLeft();
     }
 
     public void kickPlayer(@NotNull Game game, @NotNull Player user, KickReason reason) {

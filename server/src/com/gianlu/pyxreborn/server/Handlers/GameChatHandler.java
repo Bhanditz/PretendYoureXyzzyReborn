@@ -22,8 +22,9 @@ public class GameChatHandler extends BaseHandlerWithGame {
     public JsonObject handleRequest(Server server, @NotNull User user, @NotNull Game game, JsonObject request, JsonObject response) throws GeneralException {
         JsonElement text = request.get(Fields.TEXT.toString());
         if (text == null) throw new GeneralException(ErrorCodes.INVALID_REQUEST);
-        JsonObject obj = Utils.event(Events.CHAT);
+        JsonObject obj = Utils.event(Events.GAME_CHAT);
         obj.addProperty(Fields.NICKNAME.toString(), user.nickname);
+        obj.addProperty(Fields.GID.toString(), game.gid);
         obj.add(Fields.TEXT.toString(), text);
         server.broadcastMessageToPlayers(game, obj);
         return successful(response);

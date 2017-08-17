@@ -8,12 +8,13 @@ import com.gianlu.pyxreborn.Models.*;
 import com.gianlu.pyxreborn.Utils;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import javafx.collections.ListChangeListener;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-public class GameManager {
+public class GameManager implements ListChangeListener<User> {
     private static final int CARDS_PER_HAND = 10;
     public final Game game;
     private final int intermission;
@@ -24,6 +25,7 @@ public class GameManager {
     private final Random random = new Random();
     private final Timer generalTimer = new Timer();
     private Round round;
+    private int judgeIndex = 0;
 
     public GameManager(PyxServerAdapter server, Game game) {
         this.server = server;
@@ -32,6 +34,8 @@ public class GameManager {
         this.cardSets = new ArrayList<>();
         this.whiteCards = new ArrayList<>();
         this.blackCards = new ArrayList<>();
+
+        game.spectators.addListener(this);
     }
 
     private void loadCards() throws GeneralException {
@@ -112,6 +116,18 @@ public class GameManager {
         nextRound();
     }
 
+    public void stop() throws GeneralException {
+        if (game.status == Game.Status.LOBBY) throw new GeneralException(ErrorCodes.GAME_NOT_STARTED);
+        if (round != null) round.stop();
+        round = null;
+
+        whiteCards.clear();
+        blackCards.clear();
+        cardSets.clear();
+
+        game.status = Game.Status.LOBBY;
+    }
+
     private void reloadBlackCards() {
         blackCards.clear();
         for (CardSet set : cardSets) blackCards.addAll(set.blackCards);
@@ -131,9 +147,20 @@ public class GameManager {
         round.judge(player, card);
     }
 
+    private void onPlayerLeft() {
+        try {
+            if (game.players.size() < 3) stop();
+        } catch (GeneralException ignored) {
+        }
+    }
+
+    @Override
+    public void onChanged(Change<? extends User> change) { // FIXME: Not called?
+        if (change.getRemovedSize() > 0) onPlayerLeft();
+    }
+
     private class Round {
         private final PlayedCards playedCards;
-        private int judgeIndex;
         private BlackCard blackCard;
 
         Round() {
@@ -203,6 +230,10 @@ public class GameManager {
         private void nextBlackCard() {
             if (blackCards.isEmpty()) reloadBlackCards();
             blackCard = blackCards.get(random.nextInt(blackCards.size()));
+        }
+
+        private void stop() {
+            server.broadcastMessageToPlayers(game, Utils.event(Events.GAME_STOPPED));
         }
 
         private class PlayedCards extends HashMap<Player, List<WhiteCard>> {

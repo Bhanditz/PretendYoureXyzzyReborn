@@ -9,6 +9,7 @@ import com.gianlu.pyxreborn.client.UI.UIClient;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import javafx.scene.input.MouseEvent;
+import javafx.stage.Stage;
 
 public class GameChat extends BaseChatController {
     private final int gameId;
@@ -18,8 +19,10 @@ public class GameChat extends BaseChatController {
         this.gameId = gameId;
     }
 
-    public static void show(Client client, String gameName, int gameId) {
-        UIClient.loadScene(null, gameName + " chat - Pretend You're Xyzzy Reborn", "Chat.fxml", new GameChat(client, gameId));
+    public static Stage show(Client client, String gameName, int gameId) {
+        Stage stage = new Stage();
+        UIClient.loadScene(stage, gameName + " chat - Pretend You're Xyzzy Reborn", "Chat.fxml", new GameChat(client, gameId));
+        return stage;
     }
 
     @Override

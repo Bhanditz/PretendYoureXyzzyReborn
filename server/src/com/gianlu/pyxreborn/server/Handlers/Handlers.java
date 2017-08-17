@@ -23,5 +23,8 @@ public class Handlers {
         LIST.put(Operations.GAME_CHAT, GameChatHandler.class);
         LIST.put(Operations.GET_GAME, GetGameHandler.class);
         LIST.put(Operations.KICK, KickUserHandler.class);
+        LIST.put(Operations.GET_ME, GetMeHandler.class);
+        LIST.put(Operations.LEAVE_GAME, LeaveGameHandler.class);
+        LIST.put(Operations.STOP_GAME, StopGameHandler.class);
     }
 }

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+<VBox xmlns:fx="http://javafx.com/fxml/1" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
+      minWidth="-Infinity"
+      prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8">
+    <children>
+        <ToolBar prefHeight="40.0" prefWidth="200.0">
+            <items>
+                <Button fx:id="startGame" mnemonicParsing="false" onMouseClicked="#startGame" text="Start game"/>
+                <Button mnemonicParsing="false" onMouseClicked="#leaveGame" text="Leave game"/>
+            </items>
+        </ToolBar>
+        <HBox>
+            <children>
+                <Pane fx:id="blackCard" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
+                      minWidth="-Infinity" prefHeight="250.0" prefWidth="200.0" HBox.hgrow="NEVER">
+                    <HBox.margin>
+                        <Insets/>
+                    </HBox.margin>
+                </Pane>
+                <ScrollPane fx:id="playedCards" maxHeight="-Infinity" prefHeight="250.0" prefWidth="200.0"
+                            vbarPolicy="NEVER" HBox.hgrow="ALWAYS">
+                    <HBox.margin>
+                        <Insets left="10.0"/>
+                    </HBox.margin>
+                </ScrollPane>
+            </children>
+            <VBox.margin>
+                <Insets bottom="20.0" left="10.0" right="10.0" top="10.0"/>
+            </VBox.margin>
+        </HBox>
+        <HBox prefHeight="100.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+            <children>
+                <VBox prefHeight="200.0" prefWidth="100.0">
+                    <children>
+                        <Label text="Players"/>
+                        <ListView fx:id="players" minWidth="-Infinity" prefWidth="250.0">
+                            <VBox.margin>
+                                <Insets bottom="10.0"/>
+                            </VBox.margin>
+                        </ListView>
+                        <Label text="Spectators"/>
+                        <ListView fx:id="spectators" minWidth="-Infinity" prefWidth="250.0"/>
+                    </children>
+                    <HBox.margin>
+                        <Insets/>
+                    </HBox.margin>
+                    <padding>
+                        <Insets right="10.0"/>
+                    </padding>
+                </VBox>
+                <VBox prefHeight="200.0" prefWidth="100.0" HBox.hgrow="ALWAYS">
+                    <children>
+                        <Label fx:id="instructions" text="{Instructions}">
+                            <font>
+                                <Font size="14.0"/>
+                            </font>
+                            <VBox.margin>
+                                <Insets bottom="10.0"/>
+                            </VBox.margin>
+                        </Label>
+                        <ScrollPane fx:id="hand" VBox.vgrow="ALWAYS"/>
+                    </children>
+                </VBox>
+            </children>
+            <VBox.margin>
+                <Insets bottom="10.0" left="10.0" right="10.0"/>
+            </VBox.margin>
+        </HBox>
+    </children>
+</VBox>

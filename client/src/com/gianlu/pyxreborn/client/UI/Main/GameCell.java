@@ -5,7 +5,7 @@ import com.gianlu.pyxreborn.Fields;
 import com.gianlu.pyxreborn.Operations;
 import com.gianlu.pyxreborn.client.Client;
 import com.gianlu.pyxreborn.client.UI.Chat.GameChat;
-import com.gianlu.pyxreborn.client.UI.Game;
+import com.gianlu.pyxreborn.client.UI.Game.Game;
 import com.gianlu.pyxreborn.client.UI.UIClient;
 import com.google.gson.JsonObject;
 import javafx.fxml.FXML;
@@ -20,10 +20,12 @@ import java.io.IOException;
 public class GameCell extends ListCell<JsonObject> {
     private final Stage mainStage;
     private final Client client;
+    private final JsonObject me;
 
-    public GameCell(Stage mainStage, Client client) {
+    public GameCell(Stage mainStage, Client client, JsonObject me) {
         this.mainStage = mainStage;
         this.client = client;
+        this.me = me;
     }
 
     @Override
@@ -75,9 +77,8 @@ public class GameCell extends ListCell<JsonObject> {
                 return;
             }
 
-            GameChat.show(client, gameName, gid);
-            Game.show(client, gameName);
-            mainStage.close();
+            Game.show(mainStage, GameChat.show(client, gameName, gid), client, me, gameName, gid);
+            mainStage.hide();
         }
 
         @FXML

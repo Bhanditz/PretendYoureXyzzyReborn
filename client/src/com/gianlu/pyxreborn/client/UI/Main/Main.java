@@ -5,7 +5,7 @@ import com.gianlu.pyxreborn.Fields;
 import com.gianlu.pyxreborn.Operations;
 import com.gianlu.pyxreborn.client.Client;
 import com.gianlu.pyxreborn.client.UI.Chat.GameChat;
-import com.gianlu.pyxreborn.client.UI.Game;
+import com.gianlu.pyxreborn.client.UI.Game.Game;
 import com.gianlu.pyxreborn.client.UI.UIClient;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -13,7 +13,6 @@ import com.google.gson.JsonObject;
 import com.sun.javafx.collections.ObservableListWrapper;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
 import javafx.scene.control.ListView;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
@@ -23,24 +22,26 @@ import java.util.ArrayList;
 public class Main {
     private final Stage stage;
     private final Client client;
+    private final JsonObject me;
     @FXML
     private ListView<JsonObject> gamesList;
     @FXML
     private ListView<String> usersList;
 
-    public Main(Stage stage, Client client) {
+    public Main(Stage stage, Client client, JsonObject me) {
         this.stage = stage;
         this.client = client;
+        this.me = me;
     }
 
-    public static void show(Client client, String nickname) {
+    public static void show(Client client, JsonObject me, String nickname) {
         Stage stage = new Stage();
-        UIClient.loadScene(stage, nickname + " - Pretend You're Xyzzy Reborn", "Main.fxml", new Main(stage, client));
+        UIClient.loadScene(stage, nickname + " - Pretend You're Xyzzy Reborn", "Main.fxml", new Main(stage, client, me));
     }
 
     @FXML
     public void initialize() {
-        gamesList.setCellFactory(param -> new GameCell(stage, client));
+        gamesList.setCellFactory(param -> new GameCell(stage, client, me));
         refreshGamesList();
         refreshUsersList();
     }
@@ -92,12 +93,12 @@ public class Main {
             return;
         }
 
-        String gameName = resp.get(Fields.HOST.toString()).getAsJsonObject().get(Fields.NICKNAME.toString()).getAsString();
-        int gid = resp.get(Fields.GID.toString()).getAsInt();
+        String gameName = resp.getAsJsonObject(Fields.GAME.toString()).getAsJsonObject(Fields.HOST.toString()).get(Fields.NICKNAME.toString()).getAsString();
+        int gid = resp.getAsJsonObject(Fields.GAME.toString()).get(Fields.GID.toString()).getAsInt();
 
-        new Alert(Alert.AlertType.INFORMATION, "New game ID: " + gid).show();
-        GameChat.show(client, gameName, gid);
-        Game.show(client, gameName);
-        stage.close();
+        Game.show(stage, GameChat.show(client, gameName, gid), client, me, gameName, gid);
+        stage.hide();
+
+        refreshGamesList();
     }
 }

@@ -5,7 +5,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Objects;
 
 public enum Operations {
-    LIST_GAMES("lg"),
+    LIST_GAMES("llg"),
     LIST_USERS("lu"),
     CREATE_GAME("cg"),
     JOIN_GAME("jg"),
@@ -18,7 +18,9 @@ public enum Operations {
     CHAT("c"),
     GAME_CHAT("gc"),
     GET_GAME("gg"),
-    KICK("k");
+    KICK("k"),
+    GET_ME("gme"),
+    LEAVE_GAME("lg"), STOP_GAME("stg");
 
     private final String val;
 

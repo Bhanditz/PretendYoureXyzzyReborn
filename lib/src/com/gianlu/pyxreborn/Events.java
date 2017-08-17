@@ -16,7 +16,8 @@ public enum Events {
     GAME_HAND_CHANGED("ghc"),
     GAME_NEW_ROUND("gnr"),
     GAME_JUDGING("gj"),
-    GAME_ROUND_ENDED("gre");
+    GAME_ROUND_ENDED("gre"),
+    GAME_STOPPED("gs");
 
     private final String val;
 

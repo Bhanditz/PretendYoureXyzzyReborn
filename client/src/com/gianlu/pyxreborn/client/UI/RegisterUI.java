@@ -4,8 +4,8 @@ import com.gianlu.pyxreborn.Exceptions.PyxException;
 import com.gianlu.pyxreborn.Fields;
 import com.gianlu.pyxreborn.Operations;
 import com.gianlu.pyxreborn.client.Client;
-import com.gianlu.pyxreborn.client.UI.Chat.GlobalChat;
-import com.gianlu.pyxreborn.client.UI.Main.Main;
+import com.gianlu.pyxreborn.client.UI.Chat.GlobalChatUI;
+import com.gianlu.pyxreborn.client.UI.Main.MainUI;
 import com.google.gson.JsonObject;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -17,7 +17,7 @@ import javafx.stage.Stage;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-public class Register {
+public class RegisterUI {
     private final Stage stage;
     @FXML
     private TextField nickname;
@@ -28,7 +28,7 @@ public class Register {
     @FXML
     private CheckBox admin;
 
-    public Register(Stage stage) {
+    public RegisterUI(Stage stage) {
         this.stage = stage;
     }
 
@@ -54,8 +54,8 @@ public class Register {
                 }
 
                 stage.close();
-                GlobalChat.show(client);
-                Main.show(client, me, nickname);
+                GlobalChatUI.show(client);
+                MainUI.show(client, me, nickname);
             } else {
                 new Alert(Alert.AlertType.ERROR, "Failed connecting!").show();
             }

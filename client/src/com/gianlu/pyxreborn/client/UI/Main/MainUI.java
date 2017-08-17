@@ -4,8 +4,8 @@ import com.gianlu.pyxreborn.Exceptions.PyxException;
 import com.gianlu.pyxreborn.Fields;
 import com.gianlu.pyxreborn.Operations;
 import com.gianlu.pyxreborn.client.Client;
-import com.gianlu.pyxreborn.client.UI.Chat.GameChat;
-import com.gianlu.pyxreborn.client.UI.Game.Game;
+import com.gianlu.pyxreborn.client.UI.Chat.GameChatUI;
+import com.gianlu.pyxreborn.client.UI.Game.GameUI;
 import com.gianlu.pyxreborn.client.UI.UIClient;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -19,7 +19,7 @@ import javafx.stage.Stage;
 
 import java.util.ArrayList;
 
-public class Main {
+public class MainUI {
     private final Stage stage;
     private final Client client;
     private final JsonObject me;
@@ -28,7 +28,7 @@ public class Main {
     @FXML
     private ListView<String> usersList;
 
-    public Main(Stage stage, Client client, JsonObject me) {
+    public MainUI(Stage stage, Client client, JsonObject me) {
         this.stage = stage;
         this.client = client;
         this.me = me;
@@ -36,7 +36,7 @@ public class Main {
 
     public static void show(Client client, JsonObject me, String nickname) {
         Stage stage = new Stage();
-        UIClient.loadScene(stage, nickname + " - Pretend You're Xyzzy Reborn", "Main.fxml", new Main(stage, client, me));
+        UIClient.loadScene(stage, nickname + " - Pretend You're Xyzzy Reborn", "Main.fxml", new MainUI(stage, client, me));
     }
 
     @FXML
@@ -96,7 +96,7 @@ public class Main {
         String gameName = resp.getAsJsonObject(Fields.GAME.toString()).getAsJsonObject(Fields.HOST.toString()).get(Fields.NICKNAME.toString()).getAsString();
         int gid = resp.getAsJsonObject(Fields.GAME.toString()).get(Fields.GID.toString()).getAsInt();
 
-        Game.show(stage, GameChat.show(client, gameName, gid), client, me, gameName, gid);
+        GameUI.show(stage, GameChatUI.show(client, gameName, gid), client, me, gameName, gid);
         stage.hide();
 
         refreshGamesList();

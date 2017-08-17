@@ -11,17 +11,17 @@ import com.google.gson.JsonObject;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 
-public class GameChat extends BaseChatController {
+public class GameChatUI extends BaseChatController {
     private final int gameId;
 
-    public GameChat(Client client, int gameId) {
+    public GameChatUI(Client client, int gameId) {
         super(client);
         this.gameId = gameId;
     }
 
     public static Stage show(Client client, String gameName, int gameId) {
         Stage stage = new Stage();
-        UIClient.loadScene(stage, gameName + " chat - Pretend You're Xyzzy Reborn", "Chat.fxml", new GameChat(client, gameId));
+        UIClient.loadScene(stage, gameName + " chat - Pretend You're Xyzzy Reborn", "Chat.fxml", new GameChatUI(client, gameId));
         return stage;
     }
 

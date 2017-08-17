@@ -4,6 +4,7 @@ package com.gianlu.pyxreborn.client.UI.Game;
 import com.gianlu.pyxreborn.Events;
 import com.gianlu.pyxreborn.Exceptions.PyxException;
 import com.gianlu.pyxreborn.Fields;
+import com.gianlu.pyxreborn.Models.Game;
 import com.gianlu.pyxreborn.Operations;
 import com.gianlu.pyxreborn.Utils;
 import com.gianlu.pyxreborn.client.Client;
@@ -25,7 +26,7 @@ import javafx.stage.Stage;
 import java.util.ArrayList;
 import java.util.Objects;
 
-public class Game implements Client.IEventListener {
+public class GameUI implements Client.IEventListener {
     private final Stage mainStage;
     private final Stage chatStage;
     private final Stage stage;
@@ -51,7 +52,7 @@ public class Game implements Client.IEventListener {
     private ScrollPane hand;
     private JsonObject judge;
 
-    public Game(Stage mainStage, Stage chatStage, Stage stage, Client client, JsonObject me, int gameId) {
+    public GameUI(Stage mainStage, Stage chatStage, Stage stage, Client client, JsonObject me, int gameId) {
         this.mainStage = mainStage;
         this.chatStage = chatStage;
         this.stage = stage;
@@ -62,7 +63,7 @@ public class Game implements Client.IEventListener {
 
     public static void show(Stage mainStage, Stage chatStage, Client client, JsonObject me, String gameName, int gameId) {
         Stage stage = new Stage();
-        UIClient.loadScene(stage, gameName + " game - Pretend You're Xyzzy Reborn", "Game.fxml", new Game(mainStage, chatStage, stage, client, me, gameId));
+        UIClient.loadScene(stage, gameName + " game - Pretend You're Xyzzy Reborn", "Game.fxml", new GameUI(mainStage, chatStage, stage, client, me, gameId));
     }
 
     @FXML
@@ -77,7 +78,7 @@ public class Game implements Client.IEventListener {
         }
 
         if (Objects.equals(me.get(Fields.NICKNAME.toString()).getAsString(), game.getAsJsonObject(Fields.HOST.toString()).get(Fields.NICKNAME.toString()).getAsString())) {  // I am the host
-            if (com.gianlu.pyxreborn.Models.Game.Status.parse(game.get(Fields.STATUS.toString()).getAsString()) == com.gianlu.pyxreborn.Models.Game.Status.LOBBY) {
+            if (Game.Status.parse(game.get(Fields.STATUS.toString()).getAsString()) == Game.Status.LOBBY) {
                 startGame.setVisible(true);
             } else {
                 startGame.setVisible(false);
@@ -141,8 +142,6 @@ public class Game implements Client.IEventListener {
 
     @Override
     public void onMessage(Events event, JsonObject obj) {
-        System.out.println("EVENT MOTHERFUCKER: " + obj);
-
         switch (event) {
             case GAME_CHAT:
             case NEW_GAME:
@@ -164,8 +163,8 @@ public class Game implements Client.IEventListener {
                 judge = obj.getAsJsonObject(Fields.JUDGE.toString());
                 JsonObject blackCard = obj.getAsJsonObject(Fields.BLACK_CARD.toString());
                 Platform.runLater(() -> {
-                    Game.this.blackCard.getChildren().clear();
-                    Game.this.blackCard.getChildren().add(new PyxCard(blackCard));
+                    GameUI.this.blackCard.getChildren().clear();
+                    GameUI.this.blackCard.getChildren().add(new PyxCard(blackCard));
                 });
                 break;
             case GAME_JUDGING:

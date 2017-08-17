@@ -11,13 +11,13 @@ import javafx.fxml.FXML;
 import javafx.scene.input.MouseEvent;
 
 
-public class GlobalChat extends BaseChatController {
-    public GlobalChat(Client client) {
+public class GlobalChatUI extends BaseChatController {
+    public GlobalChatUI(Client client) {
         super(client);
     }
 
     public static void show(Client client) {
-        UIClient.loadScene(null, "Global chat - Pretend You're Xyzzy Reborn", "Chat.fxml", new GlobalChat(client));
+        UIClient.loadScene(null, "Global chat - Pretend You're Xyzzy Reborn", "Chat.fxml", new GlobalChatUI(client));
     }
 
     @Override

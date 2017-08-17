@@ -6,7 +6,7 @@ This version of the game server can run on every platform that supports Java. It
 # Get up and running
 All you need is a machine with Java installed and a copy of the cards database of PYX (can be found in the repo).
 ## Server
-The server is command-line only. All you need to specify is the path of the cards database. To customize the settings look at the [Config](https://github.com/devgianlu/PretendYoureXyzzyReborn/server/src/com/gianlu/pyxreborn/server/Config.java) class.
+The server is command-line only. All you need to specify is the path of the cards database. To customize the settings look at the [Config](https://github.com/devgianlu/PretendYoureXyzzyReborn/tree/master/server/src/com/gianlu/pyxreborn/server/Config.java) class.
 To run the packed JAR file:
 
     java -jar pyx-server.jar --cards-db ./pyx.sqlite

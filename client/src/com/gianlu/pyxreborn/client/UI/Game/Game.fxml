@@ -9,8 +9,9 @@
     <children>
         <ToolBar prefHeight="40.0" prefWidth="200.0">
             <items>
-                <Button fx:id="startGame" mnemonicParsing="false" onMouseClicked="#startGame" text="Start game"/>
                 <Button mnemonicParsing="false" onMouseClicked="#leaveGame" text="Leave game"/>
+                <Button mnemonicParsing="false" onMouseClicked="#gameOptions" text="Game options"/>
+                <Button fx:id="startGame" mnemonicParsing="false" onMouseClicked="#startGame" text="Start game"/>
             </items>
         </ToolBar>
         <HBox>

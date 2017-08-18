@@ -126,6 +126,11 @@ public class GameUI implements Client.IEventListener {
         mainStage.show();
     }
 
+    @FXML
+    public void gameOptions(MouseEvent event) {
+        GameOptionsUI.show(client, me, game);
+    }
+
     @Override
     public void onMessage(Events event, JsonObject obj) {
         switch (event) {
@@ -162,6 +167,9 @@ public class GameUI implements Client.IEventListener {
             case GAME_ROUND_ENDED:
                 break;
             case GAME_STOPPED:
+                break;
+            case GAME_OPTIONS_CHANGED:
+                game.options = new CGame.Options(obj.getAsJsonObject(Fields.OPTIONS.toString()));
                 break;
         }
     }

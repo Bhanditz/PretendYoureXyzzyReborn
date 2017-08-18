@@ -152,13 +152,17 @@ public class Games extends ArrayList<Game> {
         game.players.add(player);
     }
 
-    public void changeGameOptions(@NotNull Game game, JsonObject request) throws GeneralException {
+    public void changeGameOptions(@NotNull Game game, @NotNull JsonObject options) throws GeneralException {
         if (game.status != Game.Status.LOBBY) throw new GeneralException(ErrorCodes.GAME_ALREADY_STARTED);
 
         game.options = new Game.Options(
-                request.has(Fields.MAX_PLAYERS.toString()) ? request.get(Fields.MAX_PLAYERS.toString()).getAsInt() : game.options.maxPlayers,
-                request.has(Fields.MAX_SPECTATORS.toString()) ? request.get(Fields.MAX_SPECTATORS.toString()).getAsInt() : game.options.maxSpectators,
-                request.has(Fields.CARD_SET_ID.toString()) ? Utils.toIntegersList(request.get(Fields.CARD_SET_ID.toString()).getAsString()) : game.options.cardSetIds);
+                options.has(Fields.MAX_PLAYERS.toString()) ? options.get(Fields.MAX_PLAYERS.toString()).getAsInt() : game.options.maxPlayers,
+                options.has(Fields.MAX_SPECTATORS.toString()) ? options.get(Fields.MAX_SPECTATORS.toString()).getAsInt() : game.options.maxSpectators,
+                options.has(Fields.CARD_SET_ID.toString()) ? Utils.toIntegersList(options.get(Fields.CARD_SET_ID.toString()).getAsJsonArray()) : game.options.cardSetIds);
+
+        JsonObject obj = Utils.event(Events.GAME_OPTIONS_CHANGED);
+        obj.add(Fields.OPTIONS.toString(), game.options.toJson());
+        server.broadcastMessageToPlayers(game, obj);
     }
 
     @Nullable

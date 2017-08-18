@@ -8,6 +8,7 @@ import com.gianlu.pyxreborn.Utils;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @ClientSafe
@@ -15,9 +16,9 @@ public class CGame implements Jsonable {
     public final int gid;
     public final Game.Status status;
     public final CUser host;
-    public final Options options;
     public final List<CPlayer> players;
     public final List<CUser> spectators;
+    public Options options;
 
     public CGame(JsonObject obj) {
         gid = obj.get(Fields.GID.toString()).getAsInt();
@@ -56,9 +57,9 @@ public class CGame implements Jsonable {
     }
 
     public static class Options implements Jsonable {
-        public final int maxPlayers;
-        public final int maxSpectators;
         public final List<Integer> cardSetIds;
+        public int maxPlayers;
+        public int maxSpectators;
 
         public Options(int maxPlayers, int maxSpectators, List<Integer> cardSetIds) {
             this.maxPlayers = maxPlayers;
@@ -70,6 +71,12 @@ public class CGame implements Jsonable {
             maxPlayers = obj.get(Fields.MAX_PLAYERS.toString()).getAsInt();
             maxSpectators = obj.get(Fields.MAX_SPECTATORS.toString()).getAsInt();
             cardSetIds = Utils.toIntegersList(obj.getAsJsonArray(Fields.CARD_SET_ID.toString()));
+        }
+
+        public Options(Options options) {
+            maxPlayers = options.maxPlayers;
+            maxSpectators = options.maxSpectators;
+            cardSetIds = new ArrayList<>(options.cardSetIds);
         }
 
         @Override

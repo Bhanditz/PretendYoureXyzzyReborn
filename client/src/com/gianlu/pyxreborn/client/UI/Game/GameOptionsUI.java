@@ -78,8 +78,8 @@ public class GameOptionsUI {
         cardSets.setCellFactory(param -> new CheckboxCardSetCell(newOptions, amHost));
         cardSets.setItems(new ObservableListWrapper<>(allCardSets));
 
-        maxPlayers.setEditable(amHost);
-        maxSpectators.setEditable(amHost);
+        maxPlayers.setDisable(!amHost);
+        maxSpectators.setDisable(!amHost);
         apply.setDisable(!amHost);
     }
 

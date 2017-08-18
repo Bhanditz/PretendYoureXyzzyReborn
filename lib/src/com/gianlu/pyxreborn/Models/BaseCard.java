@@ -18,7 +18,7 @@ public abstract class BaseCard implements Jsonable {
     }
 
     public BaseCard(JsonObject obj) {
-        id = obj.get(Fields.CARD_ID.toString()).getAsInt();
+        id = obj.get(Fields.ID.toString()).getAsInt();
         text = obj.get(Fields.TEXT.toString()).getAsString();
         JsonElement watermarkJson = obj.get(Fields.WATERMARK.toString());
         watermark = watermarkJson.isJsonNull() ? null : watermarkJson.getAsString();

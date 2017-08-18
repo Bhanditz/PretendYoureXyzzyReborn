@@ -9,12 +9,12 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 
 import java.io.IOException;
 
-public class PyxCard extends VBox {
+public class PyxCard extends GridPane {
     private final BaseCard card;
     @FXML
     private Label text;
@@ -40,11 +40,11 @@ public class PyxCard extends VBox {
         this.watermark.setText(card.watermark);
 
         if (card instanceof BlackCard) { // Black card
-            setBackground(new Background(new BackgroundFill(Color.BLACK, CornerRadii.EMPTY, Insets.EMPTY)));
+            setBackground(new Background(new BackgroundFill(Color.BLACK, new CornerRadii(8), Insets.EMPTY)));
             this.text.setTextFill(Color.WHITE);
             this.watermark.setTextFill(Color.WHITE);
         } else { // White card
-            setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
+            setBackground(new Background(new BackgroundFill(Color.WHITE, new CornerRadii(8), Insets.EMPTY)));
             this.text.setTextFill(Color.BLACK);
             this.watermark.setTextFill(Color.BLACK);
         }

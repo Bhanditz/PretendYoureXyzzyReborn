@@ -9,6 +9,7 @@ import com.gianlu.pyxreborn.Models.Client.CGame;
 import com.gianlu.pyxreborn.Models.Client.CPlayer;
 import com.gianlu.pyxreborn.Models.Client.CUser;
 import com.gianlu.pyxreborn.Models.Game;
+import com.gianlu.pyxreborn.Models.WhiteCard;
 import com.gianlu.pyxreborn.Operations;
 import com.gianlu.pyxreborn.Utils;
 import com.gianlu.pyxreborn.client.Client;
@@ -30,6 +31,7 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class GameUI implements Client.IEventListener {
@@ -152,7 +154,12 @@ public class GameUI implements Client.IEventListener {
                 });
                 break;
             case GAME_HAND_CHANGED:
-                // TODO: GAME_HAND_CHANGED (ghc): {"ev":"ghc","H":[{"id":369,"t":"Booby-trapping the house to foil burglars.","w":null},{"id":346,"t":"Shaquille O'Neal's acting career.","w":null},{"id":451,"t":"Peeing a little bit.","w":null},{"id":320,"t":"Cockfights.","w":null},{"id":392,"t":"White privilege.","w":null},{"id":340,"t":"Being on fire.","w":null},{"id":132,"t":"Opposable thumbs.","w":null},{"id":204,"t":"A murder most foul.","w":null},{"id":242,"t":"Friendly fire.","w":null},{"id":353,"t":"Ring Pops&trade;.","w":null}]}
+                List<WhiteCard> whiteCards = Utils.toList(obj.getAsJsonArray(Fields.HAND.toString()), WhiteCard.class);
+                Platform.runLater(() -> {
+                    GameUI.this.hand.getChildren().clear();
+                    for (WhiteCard card : whiteCards)
+                        GameUI.this.hand.getChildren().add(new PyxCard(card));
+                });
                 break;
             case GAME_NEW_ROUND:
                 judge = new CPlayer(obj.getAsJsonObject(Fields.JUDGE.toString()));

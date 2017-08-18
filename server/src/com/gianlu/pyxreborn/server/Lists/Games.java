@@ -56,6 +56,7 @@ public class Games extends ArrayList<Game> {
     }
 
     public void startGame(Game game) throws GeneralException {
+        if (game.status != Game.Status.LOBBY) throw new GeneralException(ErrorCodes.GAME_ALREADY_STARTED);
         GameManager manager = new GameManager(server, game);
         manager.start();
         managedGames.add(manager);

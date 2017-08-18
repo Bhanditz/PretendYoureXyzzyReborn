@@ -1,5 +1,6 @@
 package com.gianlu.pyxreborn.client.UI;
 
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -12,7 +13,8 @@ import java.io.IOException;
 
 public class UIClient {
     public static void notifyException(Throwable ex) {
-        new Alert(Alert.AlertType.ERROR, ex.getMessage()).show();
+        ex.printStackTrace();
+        Platform.runLater(() -> new Alert(Alert.AlertType.ERROR, ex.getMessage()).show());
     }
 
     public static <T> void loadScene(@Nullable Stage stage, String title, String layout, @NotNull T controller) {

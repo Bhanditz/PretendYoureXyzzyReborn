@@ -1,8 +1,11 @@
 package com.gianlu.pyxreborn.Models;
 
+import com.gianlu.pyxreborn.Annotations.ClientSafe;
 import com.gianlu.pyxreborn.Fields;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+@ClientSafe
 public abstract class BaseCard implements Jsonable {
     public final int id;
     public final String text;
@@ -12,6 +15,13 @@ public abstract class BaseCard implements Jsonable {
         this.id = id;
         this.text = text;
         this.watermark = watermark;
+    }
+
+    public BaseCard(JsonObject obj) {
+        id = obj.get(Fields.CARD_ID.toString()).getAsInt();
+        text = obj.get(Fields.TEXT.toString()).getAsString();
+        JsonElement watermarkJson = obj.get(Fields.WATERMARK.toString());
+        watermark = watermarkJson.isJsonNull() ? null : watermarkJson.getAsString();
     }
 
     @Override

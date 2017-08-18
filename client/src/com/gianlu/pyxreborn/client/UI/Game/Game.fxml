@@ -5,8 +5,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
 <VBox xmlns:fx="http://javafx.com/fxml/1" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
-      minWidth="-Infinity"
-      prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8">
+      minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8">
     <children>
         <ToolBar prefHeight="40.0" prefWidth="200.0">
             <items>
@@ -22,11 +21,14 @@
                         <Insets/>
                     </HBox.margin>
                 </Pane>
-                <ScrollPane fx:id="playedCards" maxHeight="-Infinity" prefHeight="250.0" prefWidth="200.0"
-                            vbarPolicy="NEVER" HBox.hgrow="ALWAYS">
+                <ScrollPane maxHeight="-Infinity" prefHeight="250.0" prefWidth="200.0" vbarPolicy="NEVER"
+                            HBox.hgrow="ALWAYS">
                     <HBox.margin>
                         <Insets left="10.0"/>
                     </HBox.margin>
+                    <content>
+                        <HBox fx:id="playedCards"/>
+                    </content>
                 </ScrollPane>
             </children>
             <VBox.margin>
@@ -63,7 +65,11 @@
                                 <Insets bottom="10.0"/>
                             </VBox.margin>
                         </Label>
-                        <ScrollPane fx:id="hand" VBox.vgrow="ALWAYS"/>
+                        <ScrollPane VBox.vgrow="ALWAYS">
+                            <content>
+                                <HBox fx:id="hand"/>
+                            </content>
+                        </ScrollPane>
                     </children>
                 </VBox>
             </children>

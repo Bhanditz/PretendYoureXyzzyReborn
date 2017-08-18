@@ -2,13 +2,17 @@ package com.gianlu.pyxreborn.client.UI.Main;
 
 import com.gianlu.pyxreborn.Exceptions.PyxException;
 import com.gianlu.pyxreborn.Fields;
+import com.gianlu.pyxreborn.Models.Client.CGame;
+import com.gianlu.pyxreborn.Models.Client.CUser;
 import com.gianlu.pyxreborn.Operations;
+import com.gianlu.pyxreborn.Utils;
 import com.gianlu.pyxreborn.client.Client;
 import com.gianlu.pyxreborn.client.UI.Chat.GameChatUI;
 import com.gianlu.pyxreborn.client.UI.Game.GameUI;
+import com.gianlu.pyxreborn.client.UI.ListCells.GameCell;
+import com.gianlu.pyxreborn.client.UI.ListCells.UserCell;
 import com.gianlu.pyxreborn.client.UI.UIClient;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.sun.javafx.collections.ObservableListWrapper;
 import javafx.collections.ObservableList;
@@ -17,31 +21,30 @@ import javafx.scene.control.ListView;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 
-import java.util.ArrayList;
-
 public class MainUI {
     private final Stage stage;
     private final Client client;
-    private final JsonObject me;
+    private final CUser me;
     @FXML
-    private ListView<JsonObject> gamesList;
+    private ListView<CGame> gamesList;
     @FXML
-    private ListView<String> usersList;
+    private ListView<CUser> usersList;
 
-    public MainUI(Stage stage, Client client, JsonObject me) {
+    public MainUI(Stage stage, Client client, CUser me) {
         this.stage = stage;
         this.client = client;
         this.me = me;
     }
 
-    public static void show(Client client, JsonObject me, String nickname) {
+    public static void show(Client client, CUser me) {
         Stage stage = new Stage();
-        UIClient.loadScene(stage, nickname + " - Pretend You're Xyzzy Reborn", "Main.fxml", new MainUI(stage, client, me));
+        UIClient.loadScene(stage, me.nickname + " - Pretend You're Xyzzy Reborn", "Main.fxml", new MainUI(stage, client, me));
     }
 
     @FXML
     public void initialize() {
         gamesList.setCellFactory(param -> new GameCell(stage, client, me));
+        usersList.setCellFactory(param -> new UserCell());
         refreshGamesList();
         refreshUsersList();
     }
@@ -57,8 +60,7 @@ public class MainUI {
         }
 
         JsonArray gamesArray = resp.getAsJsonArray(Fields.GAMES_LIST.toString());
-        ObservableList<JsonObject> games = new ObservableListWrapper<>(new ArrayList<JsonObject>());
-        for (JsonElement element : gamesArray) games.add(element.getAsJsonObject());
+        ObservableList<CGame> games = new ObservableListWrapper<>(Utils.toList(gamesArray, CGame.class));
         gamesList.setItems(games);
     }
 
@@ -73,30 +75,21 @@ public class MainUI {
         }
 
         JsonArray usersArray = resp.getAsJsonArray(Fields.USERS_LIST.toString());
-        ObservableList<String> users = new ObservableListWrapper<>(new ArrayList<String>());
-
-        for (JsonElement element : usersArray) {
-            JsonObject user = element.getAsJsonObject();
-            users.add(user.get(Fields.NICKNAME.toString()).getAsString());
-        }
-
+        ObservableList<CUser> users = new ObservableListWrapper<>(Utils.toList(usersArray, CUser.class));
         usersList.setItems(users);
     }
 
     @FXML
     public void createGame(MouseEvent mouseEvent) {
-        JsonObject resp;
+        CGame game;
         try {
-            resp = client.sendMessageBlocking(client.createRequest(Operations.CREATE_GAME));
+            game = new CGame(client.sendMessageBlocking(client.createRequest(Operations.CREATE_GAME)).getAsJsonObject(Fields.GAME.toString()));
         } catch (InterruptedException | PyxException ex) {
             UIClient.notifyException(ex);
             return;
         }
 
-        String gameName = resp.getAsJsonObject(Fields.GAME.toString()).getAsJsonObject(Fields.HOST.toString()).get(Fields.NICKNAME.toString()).getAsString();
-        int gid = resp.getAsJsonObject(Fields.GAME.toString()).get(Fields.GID.toString()).getAsInt();
-
-        GameUI.show(stage, GameChatUI.show(client, gameName, gid), client, me, gameName, gid);
+        GameUI.show(stage, GameChatUI.show(client, game), client, me, game);
         stage.hide();
 
         refreshGamesList();

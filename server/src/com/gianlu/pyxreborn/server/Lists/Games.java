@@ -75,25 +75,18 @@ public class Games extends ArrayList<Game> {
         for (Player player : new ArrayList<>(game.players)) {
             if (Objects.equals(player.user, user)) {
                 JsonObject obj = Utils.event(Events.GAME_PLAYER_LEFT);
-                obj.add(Fields.USER.toString(), user.toJson());
+                obj.addProperty(Fields.NICKNAME.toString(), user.nickname);
                 server.broadcastMessageToPlayers(game, obj);  // Don't broadcast this to the player itself
 
                 game.players.remove(player);
                 if (user == game.host && !game.players.isEmpty())
                     game.host = game.players.get(0).user;
 
-                killGameIfEmpty(game);
+                if (game.players.isEmpty()) killGame(game, KickReason.GAME_EMPTY);
             }
         }
 
         // The player wasn't there
-    }
-
-    /**
-     * This kills the game if there are no more players
-     */
-    private void killGameIfEmpty(@NotNull Game game) {
-        if (game.players.isEmpty()) killGame(game, KickReason.GAME_EMPTY);
     }
 
     /**
@@ -116,10 +109,6 @@ public class Games extends ArrayList<Game> {
         remove(game);
 
         server.broadcastMessage(Utils.event(Events.GAME_REMOVED));
-    }
-
-    public interface GameObserver {
-        void onPlayerLeft();
     }
 
     public void kickPlayer(@NotNull Game game, @NotNull Player user, KickReason reason) {
@@ -154,11 +143,13 @@ public class Games extends ArrayList<Game> {
         if (playingIn(user) != null) throw new GeneralException(ErrorCodes.ALREADY_IN_GAME);
         if (game.players.size() >= game.options.maxPlayers) throw new GeneralException(ErrorCodes.GAME_FULL);
 
+        Player player = new Player(user);
+
         JsonObject obj = Utils.event(Events.GAME_NEW_PLAYER);
-        obj.add(Fields.USER.toString(), user.toJson());
+        obj.add(Fields.PLAYER.toString(), player.toJson());
         server.broadcastMessageToPlayers(game, obj); // Don't broadcast this to the player itself
 
-        game.players.add(new Player(user));
+        game.players.add(player);
     }
 
     public void changeGameOptions(@NotNull Game game, JsonObject request) throws GeneralException {
@@ -177,6 +168,10 @@ public class Games extends ArrayList<Game> {
                 return game;
 
         return null;
+    }
+
+    public interface GameObserver {
+        void onPlayerLeft();
     }
 
     private class ManagedGames extends ArrayList<GameManager> {

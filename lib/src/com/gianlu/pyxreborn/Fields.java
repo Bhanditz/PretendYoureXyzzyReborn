@@ -43,7 +43,8 @@ public enum Fields {
     SCORE("S"),
     SPECTATORS("ss"),
     ADMIN_CODE("ac"),
-    KICK_REASON("kr");
+    KICK_REASON("kr"),
+    PLAYER("P");
 
     private final String val;
 

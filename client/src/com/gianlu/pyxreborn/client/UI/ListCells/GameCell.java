@@ -1,7 +1,9 @@
-package com.gianlu.pyxreborn.client.UI.Main;
+package com.gianlu.pyxreborn.client.UI.ListCells;
 
 import com.gianlu.pyxreborn.Exceptions.PyxException;
 import com.gianlu.pyxreborn.Fields;
+import com.gianlu.pyxreborn.Models.Client.CGame;
+import com.gianlu.pyxreborn.Models.Client.CUser;
 import com.gianlu.pyxreborn.Operations;
 import com.gianlu.pyxreborn.client.Client;
 import com.gianlu.pyxreborn.client.UI.Chat.GameChatUI;
@@ -17,19 +19,19 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
-public class GameCell extends ListCell<JsonObject> {
+public class GameCell extends ListCell<CGame> {
     private final Stage mainStage;
     private final Client client;
-    private final JsonObject me;
+    private final CUser me;
 
-    public GameCell(Stage mainStage, Client client, JsonObject me) {
+    public GameCell(Stage mainStage, Client client, CUser me) {
         this.mainStage = mainStage;
         this.client = client;
         this.me = me;
     }
 
     @Override
-    protected void updateItem(JsonObject item, boolean empty) {
+    protected void updateItem(CGame item, boolean empty) {
         super.updateItem(item, empty);
 
         if (empty) {
@@ -47,10 +49,7 @@ public class GameCell extends ListCell<JsonObject> {
     }
 
     private class Controller {
-        private final JsonObject item;
-        private final String gameName;
-        private final int playersNum;
-        private final int spectatorsNum;
+        private final CGame item;
         @FXML
         private Label name;
         @FXML
@@ -58,18 +57,14 @@ public class GameCell extends ListCell<JsonObject> {
         @FXML
         private Label spectators;
 
-        public Controller(JsonObject item) {
+        public Controller(CGame item) {
             this.item = item;
-            this.gameName = item.get(Fields.HOST.toString()).getAsJsonObject().get(Fields.NICKNAME.toString()).getAsString();
-            this.playersNum = item.getAsJsonArray(Fields.PLAYERS.toString()).size();
-            this.spectatorsNum = item.getAsJsonArray(Fields.SPECTATORS.toString()).size();
         }
 
         @FXML
         public void join(MouseEvent event) {
-            int gid = item.get(Fields.GID.toString()).getAsInt();
             JsonObject req = client.createRequest(Operations.JOIN_GAME);
-            req.addProperty(Fields.GID.toString(), gid);
+            req.addProperty(Fields.GID.toString(), item.gid);
             try {
                 client.sendMessageBlocking(req);
             } catch (InterruptedException | PyxException ex) {
@@ -77,7 +72,7 @@ public class GameCell extends ListCell<JsonObject> {
                 return;
             }
 
-            GameUI.show(mainStage, GameChatUI.show(client, gameName, gid), client, me, gameName, gid);
+            GameUI.show(mainStage, GameChatUI.show(client, item), client, me, item);
             mainStage.hide();
         }
 
@@ -88,9 +83,9 @@ public class GameCell extends ListCell<JsonObject> {
 
         @FXML
         public void initialize() {
-            name.setText(gameName);
-            players.setText("Players: " + playersNum);
-            spectators.setText("Spectators: " + spectatorsNum);
+            name.setText(item.host.nickname);
+            players.setText("Players: " + item.players.size());
+            spectators.setText("Spectators: " + item.spectators.size());
         }
     }
 }

@@ -6,6 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class Player implements Jsonable {
     public final User user;
@@ -50,6 +51,15 @@ public class Player implements Jsonable {
         @Override
         public String toString() {
             return val;
+        }
+
+        @Nullable
+        public static Status parse(String val) {
+            for (Status status : values())
+                if (Objects.equals(status.val, val))
+                    return status;
+
+            return null;
         }
     }
 

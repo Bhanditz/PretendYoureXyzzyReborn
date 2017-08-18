@@ -3,6 +3,7 @@ package com.gianlu.pyxreborn.client.UI.Chat;
 import com.gianlu.pyxreborn.Events;
 import com.gianlu.pyxreborn.Exceptions.PyxException;
 import com.gianlu.pyxreborn.Fields;
+import com.gianlu.pyxreborn.Models.Client.CGame;
 import com.gianlu.pyxreborn.Operations;
 import com.gianlu.pyxreborn.client.Client;
 import com.gianlu.pyxreborn.client.UI.UIClient;
@@ -19,9 +20,9 @@ public class GameChatUI extends BaseChatController {
         this.gameId = gameId;
     }
 
-    public static Stage show(Client client, String gameName, int gameId) {
+    public static Stage show(Client client, CGame game) {
         Stage stage = new Stage();
-        UIClient.loadScene(stage, gameName + " chat - Pretend You're Xyzzy Reborn", "Chat.fxml", new GameChatUI(client, gameId));
+        UIClient.loadScene(stage, game.host.nickname + " chat - Pretend You're Xyzzy Reborn", "Chat.fxml", new GameChatUI(client, game.gid));
         return stage;
     }
 

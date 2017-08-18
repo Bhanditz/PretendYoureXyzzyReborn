@@ -1,8 +1,7 @@
 package com.gianlu.pyxreborn.client.UI.Card;
 
-import com.gianlu.pyxreborn.Fields;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+import com.gianlu.pyxreborn.Models.BaseCard;
+import com.gianlu.pyxreborn.Models.BlackCard;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
@@ -16,14 +15,14 @@ import javafx.scene.paint.Color;
 import java.io.IOException;
 
 public class PyxCard extends VBox {
-    private final JsonObject obj;
+    private final BaseCard card;
     @FXML
     private Label text;
     @FXML
     private Label watermark;
 
-    public PyxCard(JsonObject obj) {
-        this.obj = obj;
+    public PyxCard(BaseCard card) {
+        this.card = card;
         FXMLLoader loader = new FXMLLoader(getClass().getResource("PyxCard.fxml"));
         loader.setController(this);
         loader.setRoot(this);
@@ -37,11 +36,10 @@ public class PyxCard extends VBox {
 
     @FXML
     public void initialize() {
-        this.text.setText(obj.get(Fields.TEXT.toString()).getAsString());
-        JsonElement watermark = obj.get(Fields.WATERMARK.toString());
-        this.watermark.setText(watermark.isJsonNull() ? null : watermark.getAsString());
+        this.text.setText(card.text);
+        this.watermark.setText(card.watermark);
 
-        if (obj.has(Fields.NUM_PICK.toString())) { // Black card
+        if (card instanceof BlackCard) { // Black card
             setBackground(new Background(new BackgroundFill(Color.BLACK, CornerRadii.EMPTY, Insets.EMPTY)));
             this.text.setTextFill(Color.WHITE);
             this.watermark.setTextFill(Color.WHITE);

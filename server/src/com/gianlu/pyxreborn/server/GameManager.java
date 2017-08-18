@@ -14,7 +14,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-public class GameManager implements ListChangeListener<User> {
+public class GameManager implements ListChangeListener<Player> {
     private static final int CARDS_PER_HAND = 10;
     public final Game game;
     private final int intermission;
@@ -35,7 +35,7 @@ public class GameManager implements ListChangeListener<User> {
         this.whiteCards = new ArrayList<>();
         this.blackCards = new ArrayList<>();
 
-        game.spectators.addListener(this);
+        game.players.addListener(this);
     }
 
     private void loadCards() throws GeneralException {
@@ -118,7 +118,6 @@ public class GameManager implements ListChangeListener<User> {
 
     public void stop() throws GeneralException {
         if (game.status == Game.Status.LOBBY) throw new GeneralException(ErrorCodes.GAME_NOT_STARTED);
-        if (round != null) round.stop();
         round = null;
 
         whiteCards.clear();
@@ -126,6 +125,7 @@ public class GameManager implements ListChangeListener<User> {
         cardSets.clear();
 
         game.status = Game.Status.LOBBY;
+        server.broadcastMessageToPlayers(game, Utils.event(Events.GAME_STOPPED));
     }
 
     private void reloadBlackCards() {
@@ -149,14 +149,16 @@ public class GameManager implements ListChangeListener<User> {
 
     private void onPlayerLeft() {
         try {
-            if (game.players.size() < 3) stop();
+            if (game.players.size() < 3) stop(); // Stop the game if there are too less players
         } catch (GeneralException ignored) {
         }
     }
 
     @Override
-    public void onChanged(Change<? extends User> change) { // FIXME: Not called?
-        if (change.getRemovedSize() > 0) onPlayerLeft();
+    public void onChanged(Change<? extends Player> change) {
+        while (change.next()) {
+            if (change.getRemovedSize() > 0) onPlayerLeft();
+        }
     }
 
     private class Round {
@@ -230,10 +232,6 @@ public class GameManager implements ListChangeListener<User> {
         private void nextBlackCard() {
             if (blackCards.isEmpty()) reloadBlackCards();
             blackCard = blackCards.get(random.nextInt(blackCards.size()));
-        }
-
-        private void stop() {
-            server.broadcastMessageToPlayers(game, Utils.event(Events.GAME_STOPPED));
         }
 
         private class PlayedCards extends HashMap<Player, List<WhiteCard>> {

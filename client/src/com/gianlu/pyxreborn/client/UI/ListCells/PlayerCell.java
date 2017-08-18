@@ -1,7 +1,6 @@
-package com.gianlu.pyxreborn.client.UI.Game;
+package com.gianlu.pyxreborn.client.UI.ListCells;
 
-import com.gianlu.pyxreborn.Fields;
-import com.google.gson.JsonObject;
+import com.gianlu.pyxreborn.Models.Client.CPlayer;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
@@ -9,10 +8,10 @@ import javafx.scene.control.ListCell;
 
 import java.io.IOException;
 
-public class PlayerCell extends ListCell<JsonObject> {
+public class PlayerCell extends ListCell<CPlayer> {
 
     @Override
-    protected void updateItem(JsonObject item, boolean empty) {
+    protected void updateItem(CPlayer item, boolean empty) {
         super.updateItem(item, empty);
         if (empty) {
             setGraphic(null);
@@ -29,7 +28,7 @@ public class PlayerCell extends ListCell<JsonObject> {
     }
 
     private class Controller {
-        private final JsonObject item;
+        private final CPlayer item;
         @FXML
         private Label name;
         @FXML
@@ -37,15 +36,15 @@ public class PlayerCell extends ListCell<JsonObject> {
         @FXML
         private Label status;
 
-        public Controller(JsonObject item) {
+        public Controller(CPlayer item) {
             this.item = item;
         }
 
         @FXML
         public void initialize() {
-            name.setText(item.getAsJsonObject(Fields.USER.toString()).get(Fields.NICKNAME.toString()).getAsString());
-            score.setText("Score: " + item.get(Fields.SCORE.toString()).getAsInt());
-            status.setText("Status: " + item.get(Fields.STATUS.toString()).getAsString());
+            name.setText(item.user.nickname);
+            score.setText("Score: " + item.score);
+            status.setText("Status: " + item.status.name());
         }
     }
 }

@@ -57,9 +57,14 @@ public class Games extends ArrayList<Game> {
 
     public void startGame(Game game) throws GeneralException {
         if (game.status != Game.Status.LOBBY) throw new GeneralException(ErrorCodes.GAME_ALREADY_STARTED);
-        GameManager manager = new GameManager(server, game);
-        manager.start();
-        managedGames.add(manager);
+        GameManager manager = managedGames.findGameManagerByGameId(game.gid);
+        if (manager == null) {
+            manager = new GameManager(server, game);
+            manager.start();
+            managedGames.add(manager);
+        } else {
+            manager.start();
+        }
     }
 
     @Nullable
@@ -95,6 +100,14 @@ public class Games extends ArrayList<Game> {
      */
     @AdminOnly
     public void killGame(@NotNull Game game, KickReason majorReason) {
+        GameManager manager = managedGames.findGameManagerByGameId(game.gid);
+        if (manager != null) {
+            try {
+                manager.stop();
+            } catch (GeneralException ignored) {
+            }
+        }
+
         if (!game.players.isEmpty()) {
             for (Player player : game.players) {
                 kickPlayer(game, player, majorReason);
@@ -107,6 +120,7 @@ public class Games extends ArrayList<Game> {
             }
         }
 
+        if (manager != null) managedGames.remove(manager);
         remove(game);
 
         server.broadcastMessage(Utils.event(Events.GAME_REMOVED));

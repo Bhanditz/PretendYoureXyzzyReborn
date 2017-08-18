@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
 <VBox xmlns:fx="http://javafx.com/fxml/1" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
-      minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8">
+      minWidth="-Infinity" prefHeight="665.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8">
     <children>
         <ToolBar maxHeight="-Infinity" minHeight="-Infinity" VBox.vgrow="ALWAYS">
             <items>
@@ -22,13 +22,13 @@
                         <Insets/>
                     </HBox.margin>
                 </Pane>
-                <ScrollPane hbarPolicy="ALWAYS" minHeight="-Infinity" prefHeight="250.0" vbarPolicy="NEVER"
-                            HBox.hgrow="ALWAYS">
+                <ScrollPane hbarPolicy="ALWAYS" minHeight="-Infinity" prefHeight="280.0"
+                            style="-fx-background-color: #ececec;" vbarPolicy="NEVER" HBox.hgrow="ALWAYS">
                     <HBox.margin>
                         <Insets left="10.0"/>
                     </HBox.margin>
                     <content>
-                        <HBox fx:id="playedCards" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="250.0"
+                        <HBox fx:id="playedCards" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="275.0"
                               style="-fx-background-color: #ececec;"/>
                     </content>
                 </ScrollPane>
@@ -67,10 +67,10 @@
                                 <Insets bottom="10.0"/>
                             </VBox.margin>
                         </Label>
-                        <ScrollPane hbarPolicy="ALWAYS" minHeight="-Infinity" prefHeight="250.0" vbarPolicy="NEVER"
-                                    VBox.vgrow="ALWAYS">
+                        <ScrollPane hbarPolicy="ALWAYS" minHeight="-Infinity" prefHeight="280.0"
+                                    style="-fx-background-color: #ececec;" vbarPolicy="NEVER" VBox.vgrow="ALWAYS">
                             <content>
-                                <HBox fx:id="hand" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="250.0"
+                                <HBox fx:id="hand" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="275.0"
                                       style="-fx-background-color: #ececec;"/>
                             </content>
                         </ScrollPane>

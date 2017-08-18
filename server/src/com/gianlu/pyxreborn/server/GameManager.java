@@ -100,6 +100,7 @@ public class GameManager implements ListChangeListener<Player> {
         if (round == null) {
             _nextRound();
         } else {
+            round = null;
             generalTimer.schedule(new TimerTask() {
                 @Override
                 public void run() {
@@ -134,14 +135,16 @@ public class GameManager implements ListChangeListener<Player> {
     }
 
     public void playCard(@NotNull Player player, int whiteCardId) throws GeneralException {
-        if (round == null) throw new GeneralException(ErrorCodes.GAME_NOT_STARTED);
+        if (game.status == Game.Status.LOBBY) throw new GeneralException(ErrorCodes.GAME_NOT_STARTED);
+        if (round == null) throw new GeneralException(ErrorCodes.GAME_NOT_YOUR_TURN);
         WhiteCard card = player.hand.findCardById(whiteCardId);
         if (card == null) throw new GeneralException(ErrorCodes.GAME_CARD_NOT_IN_YOUR_HAND);
         round.playCard(player, card);
     }
 
     public void judge(@NotNull Player player, int whiteCardId) throws GeneralException {
-        if (round == null) throw new GeneralException(ErrorCodes.GAME_NOT_STARTED);
+        if (game.status == Game.Status.LOBBY) throw new GeneralException(ErrorCodes.GAME_NOT_STARTED);
+        if (round == null) throw new GeneralException(ErrorCodes.GAME_NOT_YOUR_TURN);
         WhiteCard card = round.playedCards.findCardById(whiteCardId);
         if (card == null) throw new GeneralException(ErrorCodes.GAME_CARD_NOT_PLAYED);
         round.judge(player, card);
@@ -172,9 +175,14 @@ public class GameManager implements ListChangeListener<Player> {
 
             playedCards = new PlayedCards();
 
-            for (Player player : game.players)
-                if (player != getJudge())
-                    player.status = Player.Status.PLAYING;
+            for (Player player : game.players) {
+                if (getJudge() == player) player.status = Player.Status.WAITING_JUDGE;
+                else player.status = Player.Status.PLAYING;
+
+                JsonObject obj = Utils.event(Events.GAME_PLAYER_STATUS_CHANGED);
+                obj.add(Fields.PLAYER.toString(), player.toJson());
+                server.broadcastMessageToPlayers(game, obj);
+            }
 
             JsonObject obj = Utils.event(Events.GAME_NEW_ROUND);
             obj.add(Fields.JUDGE.toString(), getJudge().toJson());
@@ -185,7 +193,16 @@ public class GameManager implements ListChangeListener<Player> {
         private void playCard(@NotNull Player player, @NotNull WhiteCard card) throws GeneralException {
             if (player == getJudge()) throw new GeneralException(ErrorCodes.GAME_NOT_YOUR_TURN);
             playedCards.play(player, card);
-            player.status = Player.Status.WAITING;
+            player.hand.remove(card);
+
+            List<WhiteCard> playedByUser = playedCards.get(player);
+            if (playedByUser != null && playedByUser.size() == blackCard.numPick) {
+                player.status = Player.Status.WAITING;
+                JsonObject obj = Utils.event(Events.GAME_PLAYER_STATUS_CHANGED);
+                obj.add(Fields.PLAYER.toString(), player.toJson());
+                server.broadcastMessageToPlayers(game, obj);
+            }
+
             if (playedCards.everyonePlayed()) showCards();
         }
 

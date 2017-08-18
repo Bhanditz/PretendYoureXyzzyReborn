@@ -6,11 +6,13 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 
@@ -21,7 +23,7 @@ public class PyxCard extends GridPane {
     @FXML
     private Label watermark;
 
-    public PyxCard(BaseCard card) {
+    public PyxCard(BaseCard card, @Nullable ICard listener) {
         this.card = card;
         FXMLLoader loader = new FXMLLoader(getClass().getResource("PyxCard.fxml"));
         loader.setController(this);
@@ -32,6 +34,10 @@ public class PyxCard extends GridPane {
         } catch (IOException ex) {
             throw new RuntimeException(ex);
         }
+
+        setEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+            if (listener != null) listener.onCardSelected(card);
+        });
     }
 
     @FXML
@@ -48,5 +54,13 @@ public class PyxCard extends GridPane {
             this.text.setTextFill(Color.BLACK);
             this.watermark.setTextFill(Color.BLACK);
         }
+    }
+
+    public void setWinning() {
+        setBackground(new Background(new BackgroundFill(Color.LIGHTBLUE, new CornerRadii(8), Insets.EMPTY)));
+    }
+
+    public interface ICard {
+        void onCardSelected(BaseCard card);
     }
 }

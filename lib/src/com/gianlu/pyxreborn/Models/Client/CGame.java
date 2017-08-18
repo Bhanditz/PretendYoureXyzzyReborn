@@ -14,7 +14,7 @@ import java.util.List;
 @ClientSafe
 public class CGame implements Jsonable {
     public final int gid;
-    public final Game.Status status;
+    public Game.Status status;
     public final CUser host;
     public final List<CPlayer> players;
     public final List<CUser> spectators;

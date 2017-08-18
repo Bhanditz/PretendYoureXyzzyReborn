@@ -7,7 +7,7 @@
 <VBox xmlns:fx="http://javafx.com/fxml/1" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
       minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8">
     <children>
-        <ToolBar prefHeight="40.0" prefWidth="200.0">
+        <ToolBar maxHeight="-Infinity" minHeight="-Infinity" VBox.vgrow="ALWAYS">
             <items>
                 <Button mnemonicParsing="false" onMouseClicked="#leaveGame" text="Leave game"/>
                 <Button mnemonicParsing="false" onMouseClicked="#gameOptions" text="Game options"/>
@@ -22,13 +22,14 @@
                         <Insets/>
                     </HBox.margin>
                 </Pane>
-                <ScrollPane maxHeight="-Infinity" prefHeight="250.0" prefWidth="200.0" vbarPolicy="NEVER"
+                <ScrollPane hbarPolicy="ALWAYS" minHeight="-Infinity" prefHeight="250.0" vbarPolicy="NEVER"
                             HBox.hgrow="ALWAYS">
                     <HBox.margin>
                         <Insets left="10.0"/>
                     </HBox.margin>
                     <content>
-                        <HBox fx:id="playedCards"/>
+                        <HBox fx:id="playedCards" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="250.0"
+                              style="-fx-background-color: #ececec;"/>
                     </content>
                 </ScrollPane>
             </children>
@@ -66,9 +67,11 @@
                                 <Insets bottom="10.0"/>
                             </VBox.margin>
                         </Label>
-                        <ScrollPane VBox.vgrow="ALWAYS">
+                        <ScrollPane hbarPolicy="ALWAYS" minHeight="-Infinity" prefHeight="250.0" vbarPolicy="NEVER"
+                                    VBox.vgrow="ALWAYS">
                             <content>
-                                <HBox fx:id="hand"/>
+                                <HBox fx:id="hand" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="250.0"
+                                      style="-fx-background-color: #ececec;"/>
                             </content>
                         </ScrollPane>
                     </children>

@@ -18,6 +18,9 @@ public class Server extends PyxServerAdapter {
         super(config, sets);
     }
 
+    /**
+     * Picks the right {@link BaseHandler} to perform the requested {@link Operations}.
+     */
     @Override
     @Nullable
     protected JsonObject onMessage(WebSocket conn, User user, JsonObject request, JsonObject response) throws GeneralException {

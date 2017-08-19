@@ -24,6 +24,9 @@ public class CardsDB {
         db.setAutoCommit(false);
     }
 
+    /**
+     * Loads all the white cards.
+     */
     private Map<Integer, WhiteCard> loadWhiteCards(Statement statement) throws SQLException {
         Map<Integer, WhiteCard> whiteCards = new HashMap<>();
         try (ResultSet result = statement.executeQuery("SELECT * FROM white_cards")) {
@@ -38,6 +41,9 @@ public class CardsDB {
         return whiteCards;
     }
 
+    /**
+     * Loads all the black cards.
+     */
     private Map<Integer, BlackCard> loadBlackCards(Statement statement) throws SQLException {
         Map<Integer, BlackCard> blackCards = new HashMap<>();
         try (ResultSet result = statement.executeQuery("SELECT * FROM black_cards")) {
@@ -54,6 +60,9 @@ public class CardsDB {
         return blackCards;
     }
 
+    /**
+     * Loads all the card sets in the database.
+     */
     public CardSets loadCardSets() throws SQLException {
         CardSets sets = new CardSets();
         try (Statement statement = db.createStatement()) {

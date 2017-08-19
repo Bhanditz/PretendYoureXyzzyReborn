@@ -12,7 +12,8 @@ public class Startup {
         Config config = new Config();
 
         try {
-            JCommander.newBuilder().programName("pyx-reborn")
+            JCommander.newBuilder()
+                    .programName("pyx-server")
                     .addObject(config)
                     .expandAtSign(true)
                     .build()

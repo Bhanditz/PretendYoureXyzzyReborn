@@ -38,6 +38,11 @@ public class GameManager implements ListChangeListener<Player> {
         game.players.addListener(this);
     }
 
+    /**
+     * Load the needed cards.
+     *
+     * @throws GeneralException if the game can't be started with the current options.
+     */
     private void loadCards() throws GeneralException {
         cardSets.clear();
         whiteCards.clear();
@@ -69,12 +74,18 @@ public class GameManager implements ListChangeListener<Player> {
         }
     }
 
+    /**
+     * Reload the {@link #whiteCards} taking care of removing cards already present in the players' hands.
+     */
     private void reloadWhiteCards() {
         whiteCards.clear();
         for (CardSet set : cardSets) whiteCards.addAll(set.whiteCards);
         for (Player player : game.players) whiteCards.removeAll(player.hand); // This way we don't have duplicated cards
     }
 
+    /**
+     * Restore each player hand to {@link #CARDS_PER_HAND} cards.
+     */
     private void handDeal() {
         for (Player player : game.players) {
             while (player.hand.size() < 10) {
@@ -96,6 +107,9 @@ public class GameManager implements ListChangeListener<Player> {
         round = new Round();
     }
 
+    /**
+     * Starts a new round if no round was made before or after {@link #intermission} if it's not the first round.
+     */
     private void nextRound() {
         if (round == null) {
             _nextRound();
@@ -110,6 +124,11 @@ public class GameManager implements ListChangeListener<Player> {
         }
     }
 
+    /**
+     * Starts the game.
+     *
+     * @throws GeneralException if the can't be started.
+     */
     public void start() throws GeneralException {
         if (game.players.size() < 3) throw new GeneralException(ErrorCodes.GAME_NOT_ENOUGH_PLAYERS);
         loadCards();
@@ -117,6 +136,9 @@ public class GameManager implements ListChangeListener<Player> {
         nextRound();
     }
 
+    /**
+     * Stops the game.
+     */
     public void stop() throws GeneralException {
         if (game.status == Game.Status.LOBBY) throw new GeneralException(ErrorCodes.GAME_NOT_STARTED);
         round = null;
@@ -129,11 +151,17 @@ public class GameManager implements ListChangeListener<Player> {
         server.broadcastMessageToPlayers(game, Utils.event(Events.GAME_STOPPED));
     }
 
+    /**
+     * Reloads {@link #blackCards}.
+     */
     private void reloadBlackCards() {
         blackCards.clear();
         for (CardSet set : cardSets) blackCards.addAll(set.blackCards);
     }
 
+    /**
+     * Plays a card.
+     */
     public void playCard(@NotNull Player player, int whiteCardId) throws GeneralException {
         if (game.status == Game.Status.LOBBY) throw new GeneralException(ErrorCodes.GAME_NOT_STARTED);
         if (round == null) throw new GeneralException(ErrorCodes.GAME_NOT_YOUR_TURN);
@@ -142,6 +170,9 @@ public class GameManager implements ListChangeListener<Player> {
         round.playCard(player, card);
     }
 
+    /**
+     * Decides the winning card.
+     */
     public void judge(@NotNull Player player, int whiteCardId) throws GeneralException {
         if (game.status == Game.Status.LOBBY) throw new GeneralException(ErrorCodes.GAME_NOT_STARTED);
         if (round == null) throw new GeneralException(ErrorCodes.GAME_NOT_YOUR_TURN);
@@ -150,6 +181,9 @@ public class GameManager implements ListChangeListener<Player> {
         round.judge(player, card);
     }
 
+    /**
+     * Notifies that a player left the game.
+     */
     private void onPlayerLeft() {
         try {
             if (game.players.size() < 3) stop(); // Stop the game if there are too less players
@@ -168,6 +202,14 @@ public class GameManager implements ListChangeListener<Player> {
         private final PlayedCards playedCards;
         private BlackCard blackCard;
 
+        /**
+         * Starts a new round doing so:
+         * <p>
+         * - Selecting the judge
+         * - Selecting the black card
+         * <p>
+         * Also takes care on restoring players statuses.
+         */
         Round() {
             nextJudge();
             getJudge().status = Player.Status.WAITING_JUDGE;
@@ -190,6 +232,9 @@ public class GameManager implements ListChangeListener<Player> {
             server.broadcastMessageToPlayers(game, obj);
         }
 
+        /**
+         * Plays a card and checks if everyone played. Also notifies player status changed.
+         */
         private void playCard(@NotNull Player player, @NotNull WhiteCard card) throws GeneralException {
             if (player == getJudge()) throw new GeneralException(ErrorCodes.GAME_NOT_YOUR_TURN);
             playedCards.play(player, card);
@@ -206,6 +251,9 @@ public class GameManager implements ListChangeListener<Player> {
             if (playedCards.everyonePlayed()) showCards();
         }
 
+        /**
+         * Selects the winning card. Starts a new round after notifying the winner and the winning card.
+         */
         private void judge(@NotNull Player judge, @NotNull WhiteCard card) throws GeneralException {
             if (judge != getJudge() || game.status != Game.Status.JUDGING)
                 throw new GeneralException(ErrorCodes.GAME_NOT_YOUR_TURN);
@@ -221,6 +269,9 @@ public class GameManager implements ListChangeListener<Player> {
             nextRound();
         }
 
+        /**
+         * Shows played cards to all the players.
+         */
         private void showCards() {
             game.status = Game.Status.JUDGING;
             getJudge().status = Player.Status.JUDGING;
@@ -241,11 +292,17 @@ public class GameManager implements ListChangeListener<Player> {
             return game.players.get(judgeIndex);
         }
 
+        /**
+         * Selects the next judge.
+         */
         private void nextJudge() {
             if (judgeIndex == game.players.size() - 1) judgeIndex = 0;
             else judgeIndex++;
         }
 
+        /**
+         * Selects the next black card.
+         */
         private void nextBlackCard() {
             if (blackCards.isEmpty()) reloadBlackCards();
             blackCard = blackCards.get(random.nextInt(blackCards.size()));
@@ -259,6 +316,9 @@ public class GameManager implements ListChangeListener<Player> {
                         put(player, null);
             }
 
+            /**
+             * Add a card to the player's played cards.
+             */
             private void play(Player player, WhiteCard card) {
                 List<WhiteCard> cards = get(player);
                 if (cards == null) cards = new ArrayList<>();
@@ -285,6 +345,9 @@ public class GameManager implements ListChangeListener<Player> {
                 return null;
             }
 
+            /**
+             * @return true if everyone played the cards.
+             */
             private boolean everyonePlayed() {
                 for (List<WhiteCard> cards : values())
                     if (cards == null || cards.size() < blackCard.numPick)

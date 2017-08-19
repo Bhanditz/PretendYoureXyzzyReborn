@@ -35,6 +35,9 @@ public class Games extends ArrayList<Game> {
         return maxGames;
     }
 
+    /**
+     * Creates a new game.
+     */
     public Game createAndAdd(@NotNull User host) throws GeneralException {
         if (size() >= maxGames) throw new GeneralException(ErrorCodes.TOO_MANY_GAMES);
         if (playingIn(host) != null || spectatingIn(host) != null)
@@ -56,6 +59,9 @@ public class Games extends ArrayList<Game> {
         return managedGames.findGameManagerByGameId(gid);
     }
 
+    /**
+     * Starts a game. Creating the {@link GameManager} if needed.
+     */
     public void startGame(Game game) throws GeneralException {
         if (game.status != Game.Status.LOBBY) throw new GeneralException(ErrorCodes.GAME_ALREADY_STARTED);
         GameManager manager = managedGames.findGameManagerByGameId(game.gid);
@@ -87,6 +93,9 @@ public class Games extends ArrayList<Game> {
         return null;
     }
 
+    /**
+     * Removes a player or a spectator from the game.
+     */
     public void leaveGame(@NotNull Game game, @NotNull User user) {
         for (Player player : new ArrayList<>(game.players)) {
             if (Objects.equals(player.user, user)) {
@@ -117,7 +126,7 @@ public class Games extends ArrayList<Game> {
     }
 
     /**
-     * This kills the game, kicking everyone and deleting the game
+     * Kills the game, kicking everyone and deleting the game
      */
     @AdminOnly
     public void killGame(@NotNull Game game, KickReason majorReason) {
@@ -147,6 +156,9 @@ public class Games extends ArrayList<Game> {
         server.broadcastMessage(Utils.event(Events.GAME_REMOVED));
     }
 
+    /**
+     * Kicks a player from the game.
+     */
     public void kickPlayer(@NotNull Game game, @NotNull Player user, KickReason reason) {
         for (Player player : game.players) {
             if (Objects.equals(player, user)) {
@@ -159,6 +171,9 @@ public class Games extends ArrayList<Game> {
         }
     }
 
+    /**
+     * Kicks a spectator from the game.
+     */
     public void kickSpectator(@NotNull Game game, @NotNull User user, KickReason reason) {
         for (User spectator : game.spectators) {
             if (Objects.equals(spectator, user)) {
@@ -171,6 +186,9 @@ public class Games extends ArrayList<Game> {
         }
     }
 
+    /**
+     * Adds a player to the game.
+     */
     public void joinGame(@NotNull Game game, @NotNull User user) throws GeneralException {
         if (playingIn(user) != null || spectatingIn(user) != null)
             throw new GeneralException(ErrorCodes.ALREADY_IN_GAME);
@@ -185,6 +203,9 @@ public class Games extends ArrayList<Game> {
         game.players.add(player);
     }
 
+    /**
+     * Adds a spectator to the game.
+     */
     public void spectateGame(@NotNull Game game, @NotNull User user) throws GeneralException {
         if (playingIn(user) != null || spectatingIn(user) != null)
             throw new GeneralException(ErrorCodes.ALREADY_IN_GAME);
@@ -197,6 +218,9 @@ public class Games extends ArrayList<Game> {
         game.spectators.add(user);
     }
 
+    /**
+     * Changes the game options. Partial updates are supported.
+     */
     public void changeGameOptions(@NotNull Game game, @NotNull JsonObject options) throws GeneralException {
         if (game.status != Game.Status.LOBBY) throw new GeneralException(ErrorCodes.GAME_ALREADY_STARTED);
 

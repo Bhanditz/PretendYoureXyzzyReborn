@@ -54,6 +54,9 @@ public abstract class PyxServerAdapter extends WebSocketServer {
         }, 0, ADMIN_CODE_REFRESH_RATE * 1000);
     }
 
+    /**
+     * Refreshes the admin code
+     */
     private void refreshAdminCode() {
         currentAdminCode = Utils.generateAlphanumericString(24);
         LOGGER.info("Current admin code: " + currentAdminCode);
@@ -64,6 +67,12 @@ public abstract class PyxServerAdapter extends WebSocketServer {
         LOGGER.info("Client connected: " + conn.getRemoteSocketAddress());
     }
 
+    /**
+     * This method takes care of validating the client handshake.
+     * The handshake must contains a nickname. Optionally, an admin code can be sent to login as admin.
+     * <p>
+     * To resume a previous session a session ID can be sent. See {@link ConnectedUsers#removeUser(User, boolean)}.
+     */
     @Override
     public ServerHandshakeBuilder onWebsocketHandshakeReceivedAsServer(WebSocket conn, Draft draft, ClientHandshake request) throws InvalidDataException {
         ServerHandshakeBuilder builder = super.onWebsocketHandshakeReceivedAsServer(conn, draft, request);
@@ -125,6 +134,9 @@ public abstract class PyxServerAdapter extends WebSocketServer {
         }
     }
 
+    /**
+     * Creates a basic response for the given id
+     */
     private JsonObject createResponse(@Nullable JsonElement id) {
         JsonObject resp = new JsonObject();
         if (id != null) resp.addProperty(Fields.ID.toString(), id.getAsString());
@@ -151,6 +163,9 @@ public abstract class PyxServerAdapter extends WebSocketServer {
         LOGGER.info("Server started on port " + getPort());
     }
 
+    /**
+     * Sends an error code to the specified {@link WebSocket}
+     */
     private void sendErrorCode(WebSocket conn, JsonElement id, ErrorCodes code) {
         LOGGER.info("Error code sent to " + conn.getRemoteSocketAddress() + ": " + code.toString());
         JsonObject obj = createResponse(id);
@@ -158,6 +173,9 @@ public abstract class PyxServerAdapter extends WebSocketServer {
         sendMessage(conn, obj);
     }
 
+    /**
+     * Broadcast the message to all the users on the server
+     */
     public void broadcastMessage(JsonElement message) {
         for (User user : users) sendMessage(user, message);
     }
@@ -173,10 +191,16 @@ public abstract class PyxServerAdapter extends WebSocketServer {
             sendMessage(spectator, message);
     }
 
+    /**
+     * Send a message to the specified {@link WebSocket}
+     */
     public void sendMessage(WebSocket socket, JsonElement message) {
         socket.send(message.toString());
     }
 
+    /**
+     * Find the socket of the specified {@link User} and then uses {@link #sendMessage(WebSocket, JsonElement)}
+     */
     public void sendMessage(User user, JsonElement message) {
         for (WebSocket client : connections())
             if (Objects.equals(client.getRemoteSocketAddress(), user.address))

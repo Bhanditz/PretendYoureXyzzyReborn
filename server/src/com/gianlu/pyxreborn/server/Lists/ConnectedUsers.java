@@ -13,7 +13,9 @@ import com.gianlu.pyxreborn.Utils;
 import com.gianlu.pyxreborn.server.PyxServerAdapter;
 import com.google.gson.JsonObject;
 import org.java_websocket.WebSocket;
+import org.java_websocket.drafts.Draft;
 import org.java_websocket.framing.CloseFrame;
+import org.java_websocket.handshake.ClientHandshake;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -33,6 +35,9 @@ public class ConnectedUsers extends ArrayList<User> {
         new Timer().scheduleAtFixedRate(new GeneralTasks(), 0, GENERAL_TASKS_PERIOD * 1000);
     }
 
+    /**
+     * Kicks an user from the server. Not allowing reconnection.
+     */
     @AdminOnly
     public void kickUser(@NotNull User user, @Nullable KickReason reason) {
         Game playingIn = server.games.playingIn(user);
@@ -47,6 +52,8 @@ public class ConnectedUsers extends ArrayList<User> {
     }
 
     /**
+     * Adds an user to the server.
+     *
      * @param admin if true the user must connect at every cost, even by kicking other players
      */
     public User checkAndAdd(String nickname, @Nullable String sid, InetSocketAddress address, boolean admin) throws GeneralException {
@@ -120,6 +127,13 @@ public class ConnectedUsers extends ArrayList<User> {
         return null;
     }
 
+    /**
+     * Remove the specified {@link User}.
+     *
+     * @param remote if true the user won't be disconnected immediately.
+     *               Its session can be restored by providing the session ID. See {@link PyxServerAdapter#onWebsocketHandshakeReceivedAsServer(WebSocket, Draft, ClientHandshake)}.
+     *               The user will be permanently deleted after the reconnect delay. See {@link ConnectedUsers.GeneralTasks}.
+     */
     public void removeUser(User user, boolean remote) {
         if (remote) {
             user.disconnectedAt = System.currentTimeMillis(); // We're giving a chance to reconnect to the user
@@ -133,6 +147,9 @@ public class ConnectedUsers extends ArrayList<User> {
         }
     }
 
+    /**
+     * Removes the user associated with the specified {@link InetSocketAddress}.
+     */
     public void removeUser(InetSocketAddress address, boolean remote) {
         User user = findByAddress(address);
         if (user != null) removeUser(user, remote);
@@ -142,11 +159,15 @@ public class ConnectedUsers extends ArrayList<User> {
         return maxUsers;
     }
 
+    /**
+     * General tasks:
+     * <p>
+     * - Remove an user if it's been disconnected for too long
+     */
     private class GeneralTasks extends TimerTask {
 
         @Override
         public void run() {
-            // Remove user if it's been disconnected for too long
             for (int i = size() - 1; i >= 0; i--) {
                 User user = get(i);
                 if (user.isDisconnected() && System.currentTimeMillis() - user.disconnectedAt >= reconnectDelay)

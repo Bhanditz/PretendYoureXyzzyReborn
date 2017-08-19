@@ -13,8 +13,18 @@ public class PyxCardGroup extends HBox {
 
     public PyxCardGroup(List<WhiteCard> cards, PyxCard.ICard listener) {
         this.cards = cards;
-        for (WhiteCard card : cards)
+
+        boolean first = true;
+        for (WhiteCard card : cards) {
+            if (!first) {
+                Pane pane = new Pane();
+                pane.setPadding(new Insets(0, 5, 0, 0));
+                getChildren().add(pane);
+            }
+
+            first = false;
             getChildren().add(new PyxCard(card, listener));
+        }
 
         setPadding(new Insets(5));
 

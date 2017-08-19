@@ -1,0 +1,17 @@
+
+com.gianlu.pyxreborn
+com.gianlu.pyxreborn.Annotations
+com.gianlu.pyxreborn.Exceptions
+com.gianlu.pyxreborn.Models
+com.gianlu.pyxreborn.Models.Client
+com.gianlu.pyxreborn.client
+com.gianlu.pyxreborn.client.UI
+com.gianlu.pyxreborn.client.UI.Card
+com.gianlu.pyxreborn.client.UI.Chat
+com.gianlu.pyxreborn.client.UI.Game
+com.gianlu.pyxreborn.client.UI.ListCells
+com.gianlu.pyxreborn.client.UI.Main
+com.gianlu.pyxreborn.server
+com.gianlu.pyxreborn.server.DB
+com.gianlu.pyxreborn.server.Handlers
+com.gianlu.pyxreborn.server.Lists

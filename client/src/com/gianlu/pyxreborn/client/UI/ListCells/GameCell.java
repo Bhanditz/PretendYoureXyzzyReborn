@@ -78,7 +78,17 @@ public class GameCell extends ListCell<CGame> {
 
         @FXML
         public void spectate(MouseEvent event) {
-            throw new UnsupportedOperationException("Not implemented yet!"); // TODO
+            JsonObject req = client.createRequest(Operations.SPECTATE_GAME);
+            req.addProperty(Fields.GID.toString(), item.gid);
+            try {
+                client.sendMessageBlocking(req);
+            } catch (InterruptedException | PyxException ex) {
+                UIClient.notifyException(ex);
+                return;
+            }
+
+            GameUI.show(mainStage, GameChatUI.show(client, item), client, me, item);
+            mainStage.hide();
         }
 
         @FXML

@@ -77,6 +77,10 @@ public class GameUI implements Client.IEventListener, PyxCard.ICard {
         UIClient.loadScene(stage, game.host.nickname + " game - Pretend You're Xyzzy Reborn", "Game.fxml", new GameUI(mainStage, chatStage, stage, client, me, game));
     }
 
+    private boolean isSpectating() {
+        return game.spectators.contains(me);
+    }
+
     @FXML
     public void initialize() {
         JsonObject obj = client.createRequest(Operations.GET_GAME);
@@ -102,6 +106,8 @@ public class GameUI implements Client.IEventListener, PyxCard.ICard {
         players.setItems(playersList);
 
         client.addListener((event, request) -> true, this);
+
+        if (isSpectating()) instructions.setText("You're a spectator!");
     }
 
     @FXML
@@ -173,12 +179,16 @@ public class GameUI implements Client.IEventListener, PyxCard.ICard {
 
                     this.playedCards.getChildren().clear();
 
-                    if (Objects.equals(judge.user, me)) { // I am the judge
-                        instructions.setText("You're the Card Czar.");
-                        hand.setDisable(true);
-                    } else { // I am not the judge
-                        instructions.setText("Pick " + blackCard.numPick + " card(s) to play...");
-                        hand.setDisable(false);
+                    if (!isSpectating()) {
+                        if (Objects.equals(judge.user, me)) { // I am the judge
+                            instructions.setText("You're the Card Czar.");
+                            hand.setDisable(true);
+                        } else { // I am not the judge
+                            instructions.setText("Pick " + blackCard.numPick + " card(s) to play...");
+                            hand.setDisable(false);
+                        }
+                    } else {
+                        instructions.setText("You're a spectator.");
                     }
                 });
                 break;
@@ -231,8 +241,12 @@ public class GameUI implements Client.IEventListener, PyxCard.ICard {
 
                 if (Objects.equals(player.user, me) && player.status == Player.Status.WAITING) {
                     Platform.runLater(() -> {
-                        instructions.setText("Waiting for other players...");
-                        hand.setDisable(true);
+                        if (!isSpectating()) {
+                            instructions.setText("Waiting for other players...");
+                            hand.setDisable(true);
+                        } else {
+                            instructions.setText("You're a spectator.");
+                        }
                     });
                 }
                 break;

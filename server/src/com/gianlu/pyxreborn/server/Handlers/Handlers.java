@@ -26,5 +26,6 @@ public class Handlers {
         LIST.put(Operations.GET_ME, GetMeHandler.class);
         LIST.put(Operations.LEAVE_GAME, LeaveGameHandler.class);
         LIST.put(Operations.STOP_GAME, StopGameHandler.class);
+        LIST.put(Operations.SPECTATE_GAME, SpectateGameHandler.class);
     }
 }

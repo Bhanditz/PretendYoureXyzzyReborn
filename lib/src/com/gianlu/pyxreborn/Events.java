@@ -19,7 +19,9 @@ public enum Events {
     GAME_ROUND_ENDED("gre"),
     GAME_STOPPED("gs"),
     GAME_OPTIONS_CHANGED("goc"),
-    GAME_PLAYER_STATUS_CHANGED("gpsc");
+    GAME_PLAYER_STATUS_CHANGED("gpsc"),
+    GAME_NEW_SPECTATOR("gns"),
+    GAME_SPECTATOR_LEFT("gsl");
 
     private final String val;
 

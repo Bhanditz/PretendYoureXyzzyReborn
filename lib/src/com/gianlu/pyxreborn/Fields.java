@@ -44,7 +44,8 @@ public enum Fields {
     SPECTATORS("ss"),
     ADMIN_CODE("ac"),
     KICK_REASON("kr"),
-    PLAYER("P");
+    PLAYER("P"),
+    SPECTATOR("S");
 
     private final String val;
 

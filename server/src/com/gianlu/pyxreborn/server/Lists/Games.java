@@ -37,7 +37,8 @@ public class Games extends ArrayList<Game> {
 
     public Game createAndAdd(@NotNull User host) throws GeneralException {
         if (size() >= maxGames) throw new GeneralException(ErrorCodes.TOO_MANY_GAMES);
-        if (playingIn(host) != null) throw new GeneralException(ErrorCodes.ALREADY_IN_GAME);
+        if (playingIn(host) != null || spectatingIn(host) != null)
+            throw new GeneralException(ErrorCodes.ALREADY_IN_GAME);
 
         Game game = new Game(new Random().nextInt(), host);
         game.players.add(new Player(host));
@@ -68,6 +69,15 @@ public class Games extends ArrayList<Game> {
     }
 
     @Nullable
+    private Game spectatingIn(User user) {
+        for (Game game : this)
+            if (game.spectators.contains(user))
+                return game;
+
+        return null;
+    }
+
+    @Nullable
     public Game playingIn(User user) {
         for (Game game : this)
             for (Player player : game.players)
@@ -80,19 +90,30 @@ public class Games extends ArrayList<Game> {
     public void leaveGame(@NotNull Game game, @NotNull User user) {
         for (Player player : new ArrayList<>(game.players)) {
             if (Objects.equals(player.user, user)) {
+                game.players.remove(player);
+
                 JsonObject obj = Utils.event(Events.GAME_PLAYER_LEFT);
                 obj.addProperty(Fields.NICKNAME.toString(), user.nickname);
                 server.broadcastMessageToPlayers(game, obj);  // Don't broadcast this to the player itself
 
-                game.players.remove(player);
                 if (user == game.host && !game.players.isEmpty())
                     game.host = game.players.get(0).user;
 
                 if (game.players.isEmpty()) killGame(game, KickReason.GAME_EMPTY);
+                return;
             }
         }
 
-        // The player wasn't there
+        for (User spectator : new ArrayList<>(game.spectators)) {
+            if (Objects.equals(spectator, user)) {
+                game.spectators.remove(spectator);
+
+                JsonObject obj = Utils.event(Events.GAME_SPECTATOR_LEFT);
+                obj.addProperty(Fields.NICKNAME.toString(), user.nickname);
+                server.broadcastMessageToPlayers(game, obj);  // Don't broadcast this to the user itself
+                return;
+            }
+        }
     }
 
     /**
@@ -136,8 +157,6 @@ public class Games extends ArrayList<Game> {
                 server.sendMessage(user.user, obj);
             }
         }
-
-        // The player wasn't there
     }
 
     public void kickSpectator(@NotNull Game game, @NotNull User user, KickReason reason) {
@@ -150,12 +169,11 @@ public class Games extends ArrayList<Game> {
                 server.sendMessage(user, obj);
             }
         }
-
-        // The spectator wasn't there
     }
 
     public void joinGame(@NotNull Game game, @NotNull User user) throws GeneralException {
-        if (playingIn(user) != null) throw new GeneralException(ErrorCodes.ALREADY_IN_GAME);
+        if (playingIn(user) != null || spectatingIn(user) != null)
+            throw new GeneralException(ErrorCodes.ALREADY_IN_GAME);
         if (game.players.size() >= game.options.maxPlayers) throw new GeneralException(ErrorCodes.GAME_FULL);
 
         Player player = new Player(user);
@@ -165,6 +183,18 @@ public class Games extends ArrayList<Game> {
         server.broadcastMessageToPlayers(game, obj); // Don't broadcast this to the player itself
 
         game.players.add(player);
+    }
+
+    public void spectateGame(@NotNull Game game, @NotNull User user) throws GeneralException {
+        if (playingIn(user) != null || spectatingIn(user) != null)
+            throw new GeneralException(ErrorCodes.ALREADY_IN_GAME);
+        if (game.spectators.size() >= game.options.maxSpectators) throw new GeneralException(ErrorCodes.GAME_FULL);
+
+        JsonObject obj = Utils.event(Events.GAME_NEW_SPECTATOR);
+        obj.add(Fields.SPECTATOR.toString(), user.toJson());
+        server.broadcastMessageToPlayers(game, obj); // Don't broadcast this to the user itself
+
+        game.spectators.add(user);
     }
 
     public void changeGameOptions(@NotNull Game game, @NotNull JsonObject options) throws GeneralException {
@@ -187,10 +217,6 @@ public class Games extends ArrayList<Game> {
                 return game;
 
         return null;
-    }
-
-    public interface GameObserver {
-        void onPlayerLeft();
     }
 
     private class ManagedGames extends ArrayList<GameManager> {

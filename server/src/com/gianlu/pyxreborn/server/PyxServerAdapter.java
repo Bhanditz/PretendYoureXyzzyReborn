@@ -162,9 +162,15 @@ public abstract class PyxServerAdapter extends WebSocketServer {
         for (User user : users) sendMessage(user, message);
     }
 
+    /**
+     * Broadcast the message to all the players and spectators
+     */
     public void broadcastMessageToPlayers(Game game, JsonElement message) {
         for (Player player : game.players)
             sendMessage(player.user, message);
+
+        for (User spectator : game.spectators)
+            sendMessage(spectator, message);
     }
 
     public void sendMessage(WebSocket socket, JsonElement message) {

@@ -20,7 +20,9 @@ public enum Operations {
     GET_GAME("gg"),
     KICK("k"),
     GET_ME("gme"),
-    LEAVE_GAME("lg"), STOP_GAME("stg");
+    LEAVE_GAME("lg"),
+    STOP_GAME("stg"),
+    SPECTATE_GAME("Sg");
 
     private final String val;
 

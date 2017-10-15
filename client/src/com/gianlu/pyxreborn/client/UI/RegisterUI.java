@@ -57,7 +57,7 @@ public class RegisterUI {
                 GlobalChatUI.show(client);
                 MainUI.show(client, me);
             } else {
-                new Alert(Alert.AlertType.ERROR, "Failed connecting!").show();
+                new Alert(Alert.AlertType.ERROR, "Failed connecting! Nickname may be invalid or server may be full.").show();
             }
         } catch (InterruptedException | URISyntaxException ex) {
             UIClient.notifyException(ex);

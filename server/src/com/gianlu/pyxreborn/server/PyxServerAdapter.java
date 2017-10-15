@@ -97,8 +97,6 @@ public abstract class PyxServerAdapter extends WebSocketServer {
             throw new InvalidDataException(CloseFrame.POLICY_VALIDATION, ErrorCodes.INVALID_REQUEST.toString());
         }
 
-        // FIXME: Not working, but I've opened an issue: https://github.com/TooTallNate/Java-WebSocket/issues/530
-
         return builder;
     }
 

@@ -1,3 +1,6 @@
+# Discontinued
+This isn't a so great idea, but rewriting the old client is. See [there](https://github.com/devgianlu/PYX-Reloaded) for a glorified version of PYX.
+
 # PretendYoureXyzzyReborn
 This is a clone of ajanata/PretendYoureXyzzy, but better.
 
